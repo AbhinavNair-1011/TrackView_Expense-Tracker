@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+
 
 const RegisterForm = ({ onSubmit, loading, error }) => {
   const [formData, setFormData] = useState({
@@ -39,25 +41,25 @@ const RegisterForm = ({ onSubmit, loading, error }) => {
   onSubmit={handleSubmit} 
   noValidate 
   aria-live="polite"
-  className="max-w-md mx-auto bg-white p-8 rounded-xl shadow-sm border border-gray-100 space-y-5"
+  className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md border border-gray-200 space-y-4"
 >
-  <h2 className="text-2xl font-bold text-gray-800 text-center mb-2">Create Account</h2>
+  <h2 className="text-2xl font-bold text-gray-800 text-center">Create Account</h2>
 
   {(formError || error) && (
     <div 
       role="alert"
-      className="p-3 bg-red-50 text-red-600 text-sm rounded-lg border border-red-100"
+      className="p-3 bg-red-50 text-red-600 text-sm rounded-md border border-red-100 flex items-center gap-2"
     >
-      {formError || error}
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+      </svg>
+      <span>{formError || error}</span>
     </div>
   )}
 
-  <div className="grid grid-cols-2 gap-4">
+  <div className="grid grid-cols-2 gap-3">
     <div className="space-y-1">
-      <label 
-        htmlFor="first_name" 
-        className="block text-sm font-medium text-gray-700"
-      >
+      <label htmlFor="first_name" className="block text-sm text-gray-600">
         First Name
       </label>
       <input
@@ -69,15 +71,12 @@ const RegisterForm = ({ onSubmit, loading, error }) => {
         onChange={handleChange}
         required
         aria-invalid={!!formError}
-        className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
       />
     </div>
 
     <div className="space-y-1">
-      <label 
-        htmlFor="last_name" 
-        className="block text-sm font-medium text-gray-700"
-      >
+      <label htmlFor="last_name" className="block text-sm text-gray-600">
         Last Name
       </label>
       <input
@@ -89,16 +88,13 @@ const RegisterForm = ({ onSubmit, loading, error }) => {
         onChange={handleChange}
         required
         aria-invalid={!!formError}
-        className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
       />
     </div>
   </div>
 
   <div className="space-y-1">
-    <label 
-      htmlFor="email" 
-      className="block text-sm font-medium text-gray-700"
-    >
+    <label htmlFor="email" className="block text-sm text-gray-600">
       Email
     </label>
     <input
@@ -110,15 +106,12 @@ const RegisterForm = ({ onSubmit, loading, error }) => {
       onChange={handleChange}
       required
       aria-invalid={!!formError}
-      className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
     />
   </div>
 
   <div className="space-y-1">
-    <label 
-      htmlFor="phone" 
-      className="block text-sm font-medium text-gray-700"
-    >
+    <label htmlFor="phone" className="block text-sm text-gray-600">
       Phone Number
     </label>
     <input
@@ -130,16 +123,13 @@ const RegisterForm = ({ onSubmit, loading, error }) => {
       onChange={handleChange}
       required
       aria-invalid={!!formError}
-      className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
     />
   </div>
 
-  <div className="grid grid-cols-2 gap-4">
+  <div className="grid grid-cols-2 gap-3">
     <div className="space-y-1">
-      <label 
-        htmlFor="password" 
-        className="block text-sm font-medium text-gray-700"
-      >
+      <label htmlFor="password" className="block text-sm text-gray-600">
         Password
       </label>
       <input
@@ -151,15 +141,12 @@ const RegisterForm = ({ onSubmit, loading, error }) => {
         onChange={handleChange}
         required
         aria-invalid={!!formError}
-        className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
       />
     </div>
 
     <div className="space-y-1">
-      <label 
-        htmlFor="confirm_password" 
-        className="block text-sm font-medium text-gray-700"
-      >
+      <label htmlFor="confirm_password" className="block text-sm text-gray-600">
         Confirm Password
       </label>
       <input
@@ -171,20 +158,17 @@ const RegisterForm = ({ onSubmit, loading, error }) => {
         onChange={handleChange}
         required
         aria-invalid={!!formError}
-        className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
       />
     </div>
   </div>
 
-  <button 
-    type="submit" 
+  <button
+    type="submit"
     disabled={loading}
-    className={`w-full mt-6 py-3 px-4 text-sm font-medium rounded-lg text-white transition-colors ${
-      loading
-        ? 'bg-blue-400 cursor-not-allowed'
-        : 'bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'
+    className={`w-full mt-4 py-2 px-4 text-sm font-medium rounded-md text-white ${
+      loading ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700'
     }`}
-    aria-disabled={loading}
   >
     {loading ? (
       <span className="flex items-center justify-center gap-2">
@@ -198,6 +182,16 @@ const RegisterForm = ({ onSubmit, loading, error }) => {
       'Register'
     )}
   </button>
+
+  <div className="text-center text-sm text-gray-600">
+    Already have an account?{' '}
+      <Link 
+    to="/" 
+    className="font-medium text-blue-600 hover:text-blue-500 hover:underline"
+  >
+    Sign in
+  </Link>
+  </div>
 </form>
 
   );

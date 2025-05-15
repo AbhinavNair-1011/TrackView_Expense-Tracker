@@ -5,10 +5,24 @@ const { dbConnect } = require("./database/dbConfig");
 dotenv.config();
 
 const app= express();
-const cors= require("cors")
+const cors= require("cors");
+const cookieParser= require("cookie-parser")
 
 app.use(express.json())
-app.use(cors())
+app.use(cookieParser())
+
+const corsOptions = {
+  origin:"http://localhost:5174",
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range'],
+  credentials: true,
+//   maxAge: 86400,
+  preflightContinue: false,
+  optionsSuccessStatus: 204
+};
+
+app.use(cors(corsOptions));
 
 const indexModel= require("./models/indexModel")
 

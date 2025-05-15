@@ -71,6 +71,7 @@ class Helpers {
   static async compare(TextPassword, hashedPassword) {
     return await bcrypt.compare(TextPassword, hashedPassword);
   }
+  
 }
 
 module.exports = Helpers;

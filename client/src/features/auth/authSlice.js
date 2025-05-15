@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { registerUserAPI } from './authApi';
+import { registerUserAPI,loginUserAPI } from './authApi';
 
 const registerUser = createAsyncThunk(
   'auth/registerUser',
@@ -15,6 +15,20 @@ const registerUser = createAsyncThunk(
   }
 );
 
+const loginUser = createAsyncThunk(
+  'auth/loginUser',
+  async (formData, thunkAPI) => {
+    try {
+      const response = await loginUserAPI(formData);
+      return response.data;
+    } catch (error) {
+      const message = error.response?.data?.message || 'Login failed';
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+
 const initialState = {
   user: null,
   loading: false,
@@ -27,21 +41,23 @@ const authSlice = createSlice({
   reducers: {
   },
   extraReducers: (builder) => {
+  [registerUser, loginUser].forEach((thunk) => {
     builder
-      .addCase(registerUser.pending, (state) => {
+      .addCase(thunk.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(registerUser.fulfilled, (state, action) => {
+      .addCase(thunk.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload.user;
+        state.user = action.payload.user || action.payload; // adapt based on your payload shape
       })
-      .addCase(registerUser.rejected, (state, action) => {
+      .addCase(thunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
-  },
-});
+  });
+}
+})
 
-export { registerUser };
+export { registerUser , loginUser};
 export default authSlice.reducer;
