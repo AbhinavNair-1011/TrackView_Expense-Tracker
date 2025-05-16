@@ -12,7 +12,7 @@ app.use(express.json())
 app.use(cookieParser())
 
 const corsOptions = {
-  origin:"http://localhost:5174",
+  origin:"http://localhost:5173",
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   exposedHeaders: ['Content-Range', 'X-Content-Range'],
@@ -27,9 +27,11 @@ app.use(cors(corsOptions));
 const indexModel= require("./models/indexModel")
 
 
-const authRoute=require("./routes/authRoute")
+const authRoute=require("./routes/authRoute");
+const profileRoute=require("./routes/profileRoute")
 
 app.use("/api",authRoute)
+app.use("/api",profileRoute)
 
 
 

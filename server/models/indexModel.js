@@ -1,15 +1,12 @@
 const User = require("./userModel");
+const UserProfile=require("./userProfileModel")
 
-const models={User};
+const models={User,UserProfile};
 
 
-
-Object.keys(models).forEach(model => {
-
-    if(models[model].associate){
-        models[model].associate=models
-    }
-    
+Object.values(models).forEach(model => {
+  if (model.associate) {
+    model.associate(models);
+  }
 });
-
 module.exports=models

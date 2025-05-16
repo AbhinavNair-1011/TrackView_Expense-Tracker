@@ -4,8 +4,7 @@ import { Link } from 'react-router-dom';
 
 const RegisterForm = ({ onSubmit, loading, error }) => {
   const [formData, setFormData] = useState({
-    first_name: '',
-    last_name: '',
+    full_name:'',
     email: '',
     phone: '',
     password: '',
@@ -21,9 +20,9 @@ const RegisterForm = ({ onSubmit, loading, error }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const { first_name, last_name, email, phone, password, confirm_password } = formData;
+    const { full_name, email, phone, password, confirm_password } = formData;
 
-    if (!first_name || !last_name || !email || !phone || !password || !confirm_password) {
+    if (!full_name|| !email || !phone || !password || !confirm_password) {
       setFormError('All fields are required.');
       return;
     }
@@ -57,17 +56,16 @@ const RegisterForm = ({ onSubmit, loading, error }) => {
     </div>
   )}
 
-  <div className="grid grid-cols-2 gap-3">
     <div className="space-y-1">
-      <label htmlFor="first_name" className="block text-sm text-gray-600">
-        First Name
+      <label htmlFor="full_name" className="block text-sm text-gray-600">
+        Full Name
       </label>
       <input
         id="first_name"
         type="text"
-        name="first_name"
+        name="full_name"
         autoComplete="given-name"
-        value={formData.first_name}
+        value={formData.full_name}
         onChange={handleChange}
         required
         aria-invalid={!!formError}
@@ -75,23 +73,7 @@ const RegisterForm = ({ onSubmit, loading, error }) => {
       />
     </div>
 
-    <div className="space-y-1">
-      <label htmlFor="last_name" className="block text-sm text-gray-600">
-        Last Name
-      </label>
-      <input
-        id="last_name"
-        type="text"
-        name="last_name"
-        autoComplete="family-name"
-        value={formData.last_name}
-        onChange={handleChange}
-        required
-        aria-invalid={!!formError}
-        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-      />
-    </div>
-  </div>
+ 
 
   <div className="space-y-1">
     <label htmlFor="email" className="block text-sm text-gray-600">

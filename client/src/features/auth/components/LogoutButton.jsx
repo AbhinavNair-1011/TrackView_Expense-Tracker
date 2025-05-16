@@ -6,15 +6,14 @@ import { useNavigate } from 'react-router-dom';
 
 const LogoutButton = () => {
 
-
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const handleLogout = async () => {
-        const resultAction = await dispatch(logoutUser());
-        if (logoutUser.fulfilled.match(resultAction)) {
-            navigate('/');
-        }
+        const result = await dispatch(logoutUser());
+        if (logoutUser.fulfilled.match(result)) {
+            navigate('/');     
+           }
     };
     return (
         <button

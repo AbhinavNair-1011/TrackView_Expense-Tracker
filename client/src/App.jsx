@@ -3,7 +3,7 @@ import RegisterPage from './features/auth/pages/RegisterPage';
 import LoginPage from './features/auth/pages/LoginPage';
 import DashboardLayout from './features/dashboard/dashboardLayout';
 import DashboardHome from './features/dashboard/pages/DashboardHome';
-import UpdateProfile from './features/dashboard/pages/UpdateProfile';
+import Profile from './features/profile/pages/Profile';
 import AuthLayout from './features/auth/AuthLayout';
 import ProtectedRoute from './features/auth/ProtectetRoute';
 import { useEffect } from 'react';
@@ -40,7 +40,7 @@ function App() {
 
         <Route path="/dashboard" element={ <ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
           <Route index element={<DashboardHome />} />
-          <Route path="profile" element={<UpdateProfile />} />
+          <Route path="profile" element={<Profile />} />
         </Route>
 
       </Routes>
