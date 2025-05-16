@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-// const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api'; 
 const API_BASE_URL =  'http://localhost:3000/api'; 
 
 const api = axios.create({
@@ -15,3 +14,7 @@ export const registerUserAPI = async (formData) => {
 export const loginUserAPI = async (formData) => {
   return await api.post('/auth/login', formData);
 };
+
+export const logoutUserAPI =async () => await api.post('/auth/logout');
+
+export const verifyUserCookieAPI=async () => await api.get('/auth/verify-cookie');

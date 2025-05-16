@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { registerUserAPI,loginUserAPI } from './authApi';
+import { registerUserAPI,loginUserAPI ,logoutUserAPI , verifyUserCookieAPI} from './authApi';
 
 const registerUser = createAsyncThunk(
   'auth/registerUser',
@@ -27,12 +27,36 @@ const loginUser = createAsyncThunk(
     }
   }
 );
+const logoutUser = createAsyncThunk(
+  'auth/logoutUser',
+  async (_, thunkAPI) => {
+    try {
+      const response = await logoutUserAPI();
+    
+    } catch (error) {
+      return thunkAPI.rejectWithValue('Logout failed');
+    }
+  }
+);
 
+const verifyUserCookie = createAsyncThunk(
+  'auth/verify-cookie',
+  async (_, thunkAPI) => {
+    try {
+      const response = await verifyUserCookieAPI();
+      return response.data;
+    } catch (error) {
+      const message = error.response?.data?.message || 'cookie verification failed';
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
 
 const initialState = {
   user: null,
   loading: false,
   error: null,
+  isAuthenticated:false
 };
 
 const authSlice = createSlice({
@@ -49,15 +73,43 @@ const authSlice = createSlice({
       })
       .addCase(thunk.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload.user || action.payload; // adapt based on your payload shape
+        state.user = action.payload.user || action.payload; 
+        state.isAuthenticated=true
       })
       .addCase(thunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+        state.isAuthenticated=false
       });
+  });
+  builder
+  .addCase(logoutUser.fulfilled, (state) => {
+    state.user = null;
+    state.isAuthenticated = false;
+    state.error = null;
+    state.loading=false;
+  })
+  .addCase(logoutUser.rejected, (state, action) => {
+    state.error = action.payload;
+        state.loading=false;
+
+  });
+
+builder
+  .addCase(verifyUserCookie.pending, (state) => {
+    state.error = null;
+  })
+  .addCase(verifyUserCookie.fulfilled, (state, action) => {
+    state.user = action.payload.user;
+    state.isAuthenticated = true;
+
+  })
+  .addCase(verifyUserCookie.rejected, (state) => {
+    state.user = null;
+    state.isAuthenticated = false;
   });
 }
 })
 
-export { registerUser , loginUser};
+export { registerUser , loginUser, logoutUser,verifyUserCookie};
 export default authSlice.reducer;

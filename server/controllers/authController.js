@@ -85,6 +85,7 @@ const login = async (req, res) => {
       secure: true,
       sameSite: 'none',
       maxAge: 24 * 60 * 60 * 1000, 
+      path:"/"
     });
 
     return Helpers.sendOk(res, {
@@ -98,8 +99,46 @@ const login = async (req, res) => {
   }
 };
 
+const logout = async (req, res) => {
+  try {
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: true, 
+      sameSite: 'none', 
+      path: '/',
+    });
+
+
+    return Helpers.sendOk(res,[], 'Logged out successfully' );
+  } catch (error) {
+    return Helpers.sendInternalServerError(res );
+  } 
+};
+
+const verifyCookie = async(req,res)=>{
+
+  try {
+    const userId = req.user.id;
+    const user = await User.findByPk(userId, {
+      attributes: ['id', 'first_name', 'last_name', 'email']
+    });
+
+    if (!user) {
+      return Helpers.sendNotFound(res, 'User not found');
+    }
+
+    return Helpers.sendOk(res, user, 'User authenticated');
+  } catch (err) {
+    return  Helpers.sendInternalServerError(res, 'Something went wrong');
+  }
+}
+
+
+
+
+
 const test= (req,res)=>{
 console.log(req.cookies)
 }
 
-module.exports = { register, login ,test}
+module.exports = { register, login ,test,logout ,verifyCookie}
