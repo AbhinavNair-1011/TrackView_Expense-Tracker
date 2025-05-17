@@ -1,7 +1,8 @@
 const User = require("./userModel");
-const UserProfile=require("./userProfileModel")
+const UserProfile=require("./userProfileModel");
+const Otp= require("./otpModel");
 
-const models={User,UserProfile};
+const models={User,UserProfile,Otp};
 
 
 Object.values(models).forEach(model => {

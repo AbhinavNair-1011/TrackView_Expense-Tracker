@@ -28,10 +28,14 @@ const indexModel= require("./models/indexModel")
 
 
 const authRoute=require("./routes/authRoute");
-const profileRoute=require("./routes/profileRoute")
+const profileRoute=require("./routes/profileRoute");
+const otpRoute=require("./routes/otpRoute")
+
 
 app.use("/api",authRoute)
-app.use("/api",profileRoute)
+app.use("/api",profileRoute);
+app.use("/api",otpRoute)
+
 
 
 

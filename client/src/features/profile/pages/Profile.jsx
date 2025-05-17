@@ -9,7 +9,6 @@ import { fetchProfile, updateProfile,updatePassword } from '../profileSlice';
 const Profile = () => {
   const dispatch = useDispatch();
   const { userProfile, error, loading, updateMessage } = useSelector((state) => state.profile);
-
   useEffect(() => {
 
     const fetchUserProfile = async () => {
@@ -28,6 +27,7 @@ const Profile = () => {
   return dispatch(updatePassword(passwordData)).unwrap()  
 
   };
+  
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -47,6 +47,7 @@ const Profile = () => {
            onPasswordUpdate={handlePasswordUpdate}
           loading={loading}
           updateMessage={updateMessage}
+          userProfileData={userProfile}
           />
         </div>
 

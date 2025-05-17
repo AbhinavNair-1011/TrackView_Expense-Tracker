@@ -57,7 +57,12 @@ const PasswordUpdate = ({ onSubmit, loading }) => {
         newPassword: passwords.new
       });
 
-      setUpdateMessage("Password Updated Successfully")
+      setUpdateMessage("Password Updated Successfully");
+      setPasswords({
+    current: '',
+    new: '',
+    confirm: '',
+  })
 
     } catch (err) {
       setErrors({ updatePassword: err })

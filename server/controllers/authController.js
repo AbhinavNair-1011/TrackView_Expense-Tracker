@@ -1,7 +1,9 @@
 const Helpers = require("../utils/helpers");
 const User = require("../models/userModel");
+const Otp= require("../models/otpModel")
 const jwt = require('jsonwebtoken');
 const { Op } = require("sequelize");
+const {sendEmail}= require("../services/emailService")
 
 
 const register = async (req, res) => {
@@ -66,50 +68,118 @@ const register = async (req, res) => {
   }
 
 }
-
-
-
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
+
     if (!email || !password) {
-      return Helpers.sendBadRequest(res, 'Email and password are required');
+      return Helpers.sendBadRequest(res, 'Email and password are required.');
     }
 
     const user = await User.findOne({ where: { email } });
-    if (!user) {
-      return Helpers.sendNotFound(res, 'User not found');
+    if (!user) return Helpers.sendNotFound(res, 'User not found.');
+
+    const isMatch = await Helpers.compare(password, user.password);
+    if (!isMatch) return Helpers.sendUnauthorized(res, 'Invalid password.');
+
+    if (user.two_factor_enabled) {
+      const rawOtp = Helpers.generateOtp();
+      const hashedOtp = await Helpers.encrypt(rawOtp);
+      const expiresAt = new Date(Date.now() + 10 * 60 * 1000); 
+
+      await Otp.create({
+        userId: user.id,
+        otpCode: hashedOtp,
+        type: '2fa_login',
+        expiresAt,
+        verified: false,
+      });
+
+      await sendEmail(email, 'Your OTP Code', `<p>Your OTP is: <strong>${rawOtp}</strong></p>`);
+
+      return Helpers.sendOk(res, { twoFactor: true, message: 'OTP sent to your email.' });
     }
-    // const isMatch = await Helpers.compare(password, user.password);
-      
-    // if (!isMatch) {
-    //   return Helpers.sendUnauthorized(res, 'Invalid password');
-    // }
 
-    const token = jwt.sign(
-      { id: user.id, },
-      "process.env.JWT_SECRET",
-      { expiresIn: '1d' }
-    );
-
+    const token = jwt.sign({ id: user.id }, "process.env.JWT_SECRET", { expiresIn: '1d' });
     res.cookie('token', token, {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
-      maxAge: 24 * 60 * 60 * 1000, 
-      path:"/"
+      maxAge: 24 * 60 * 60 * 1000,
+      path: '/',
     });
 
     return Helpers.sendOk(res, {
       user: {
         email: user.email,
-        name: user.name,
+        name: user.full_name,
+        phone:user.phone
       },
     });
-  } catch (error) {
-    return Helpers.sendInternalServerError(res, 'Internal server error');
+
+  } catch (err) {
+    console.error(err);
+    return Helpers.sendInternalServerError(res);
   }
 };
+
+
+const verify2FALogin = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    if (!email || !otp) {
+      return Helpers.sendBadRequest(res, 'Email and OTP are required.');
+    }
+
+    const user = await User.findOne({ where: { email } });
+    if (!user) return Helpers.sendNotFound(res, 'User not found.');
+
+    const otpEntry = await Otp.findOne({
+      where: {
+        userId: user.id,
+        type: '2fa_login',
+        verified: false,
+        expiresAt: { [Op.gt]: new Date() },
+      },
+      order: [['createdAt', 'DESC']],
+    });
+
+    if (!otpEntry) {
+      return Helpers.sendBadRequest(res, 'OTP expired or not found.');
+    }
+
+    const isMatch = await Helpers.compare(otp, otpEntry.otpCode);
+    if (!isMatch) return Helpers.sendBadRequest(res, 'Invalid OTP.');
+
+    otpEntry.verified = true;
+    await otpEntry.save();
+
+    const token = jwt.sign({ id: user.id }, "process.env.JWT_SECRET", { expiresIn: '1d' });
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      maxAge: 24 * 60 * 60 * 1000,
+      path: '/',
+    });
+
+    return Helpers.sendOk(res, {
+      user: {
+        email: user.email,
+        name: user.full_name,
+        phone:user.phone
+      },
+      message: '2FA login successful.',
+    });
+
+  } catch (err) {
+    console.error(err);
+    return Helpers.sendInternalServerError(res);
+  }
+};
+
+
 
 const logout = async (req, res) => {
   try {
@@ -132,9 +202,8 @@ const verifyCookie = async(req,res)=>{
   try {
     const userId = req.user.id;
     const user = await User.findByPk(userId, {
-      attributes: ['id', 'full_name', 'email']
+      attributes: [ 'full_name', 'email','phone']
     });
-
     if (!user) {
       return Helpers.sendNotFound(res, 'User not found');
     }
@@ -150,7 +219,6 @@ const updatePassword = async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
     const userId = req.user.id;
-    console.log(userId)
 
     if (!currentPassword || !newPassword) {
       return Helpers.sendBadRequest(res, "Current and new password are required");
@@ -182,8 +250,46 @@ const updatePassword = async (req, res) => {
 };
 
 
+const resetPassword = async (req, res) => {
+  try {
+    const { email, newPassword } = req.body;
+    if (!email || !newPassword) {
+      return Helpers.sendBadRequest(res, 'Email and new password are required.');
+    }
+
+    const user = await User.findOne({ where: { email } });
+    if (!user) return Helpers.sendNotFound(res, 'User not found.');
+
+    const verifiedOtp = await Otp.findOne({
+      where: {
+        userId: user.id,
+        type: 'forgot_password',
+        verified: true,
+      },
+      order: [['createdAt', 'DESC']],
+    });
+
+    if (!verifiedOtp) {
+      return Helpers.sendUnauthorized(res, 'OTP verification required.');
+    }
+
+    const hashedPassword = await Helpers.encrypt(newPassword);
+    user.password = hashedPassword;
+    await user.save();
+
+     await verifiedOtp.destroy();
+
+
+    return Helpers.sendOk(res, null, 'Password reset successful.');
+  } catch (err) {
+    console.error(err);
+    return Helpers.sendInternalServerError(res);
+  }
+};
+
+
 const test= (req,res)=>{
 console.log(req.cookies)
 }
 
-module.exports = { register, login ,test,logout ,verifyCookie,updatePassword}
+module.exports = { register, login ,test,logout ,verifyCookie,updatePassword,resetPassword,verify2FALogin}

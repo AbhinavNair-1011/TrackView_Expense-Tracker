@@ -17,4 +17,8 @@ export const loginUserAPI = async (formData) => {
 
 export const logoutUserAPI =async () => await api.post('/auth/logout');
 
+export const verifyLoginAPI = async (formData) => {
+  return await api.post('/auth/verify-login', formData);
+};
+
 export const verifyUserCookieAPI=async () => await api.get('/auth/verify-cookie');

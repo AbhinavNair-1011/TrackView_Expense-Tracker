@@ -8,6 +8,10 @@ class User extends Model {
             foreignKey: 'userId',
             onDelete: 'CASCADE',
         });
+      this.hasMany(models.Otp, {
+      foreignKey: 'userId',
+      onDelete: 'CASCADE',
+    });
     }
 }
 
@@ -41,6 +45,10 @@ User.init({
         allowNull: true,
         defaultValue: null
     },
+         two_factor_enabled: {
+          type: DataTypes.BOOLEAN,
+          defaultValue: false,
+        },
 },
     {
         sequelize,

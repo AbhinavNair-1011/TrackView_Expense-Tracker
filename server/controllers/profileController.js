@@ -9,7 +9,7 @@ const getProfile = async (req, res) => {
     const userId = req.user.id;
 
     const user = await User.findByPk(userId, {
-      attributes: ['full_name', 'email', 'phone'],
+      attributes: ['full_name', 'email', 'phone','two_factor_enabled'],
       include: [{
         model: UserProfile,
         attributes: ['dob', 'address', 'gender'],
@@ -26,9 +26,9 @@ const getProfile = async (req, res) => {
       phone: user.phone || '',
       dob: user.UserProfile?.dob || '',
       gender: user.UserProfile?.gender || '',
-      address: user.UserProfile?.address || ''
+      address: user.UserProfile?.address || '',
+      two_fa_enabled:user.two_factor_enabled || '',
     };
-
     return Helpers.sendOk(res, responseData);
   } catch (error) {
     console.error(error);
@@ -40,7 +40,6 @@ const updateProfile = async (req, res) => {
   let transaction;
   try {
     const userId = req.user.id;
-        console.log(req.body)
 
     const { full_name, phone, email, dob, address, gender } = req.body;
 

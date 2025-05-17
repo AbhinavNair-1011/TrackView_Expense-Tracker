@@ -72,6 +72,11 @@ class Helpers {
     return await bcrypt.compare(TextPassword, hashedPassword);
   }
   
+  static generateOtp () {
+   return Math.floor(100000 + Math.random() * 900000).toString();
+ }
+
+
 }
 
 module.exports = Helpers;

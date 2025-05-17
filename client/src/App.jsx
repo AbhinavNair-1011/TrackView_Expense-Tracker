@@ -10,11 +10,12 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { verifyUserCookie } from './features/auth/authSLice';
 import { useState } from 'react';
+import ResetPasswordPage from './features/auth/pages/ResetPasswordPage';
 
 
 
 function App() {
-  const dispatch=useDispatch();
+  const dispatch = useDispatch();
 
 
   const [verifying, setVerifying] = useState(true);
@@ -22,10 +23,10 @@ function App() {
   useEffect(() => {
     dispatch(verifyUserCookie()).finally(() => setVerifying(false));
 
-    
+
   }, [dispatch]);
 
-  if (verifying) return null; 
+  if (verifying) return null;
 
 
 
@@ -33,12 +34,14 @@ function App() {
     <Router>
       <Routes>
 
-        <Route path="/" element={<AuthLayout/>}>
-          <Route index element={<LoginPage/>}/>
+        <Route path="/" element={<AuthLayout />}>
+          <Route index element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
+          <Route path="reset-password" element={<ResetPasswordPage />} />
+
         </Route>
 
-        <Route path="/dashboard" element={ <ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
+        <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
           <Route index element={<DashboardHome />} />
           <Route path="profile" element={<Profile />} />
         </Route>
