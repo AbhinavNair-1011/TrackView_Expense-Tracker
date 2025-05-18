@@ -14,22 +14,19 @@ const sendOtp = async (req, res) => {
     const { email, type } = req.body;
 
     if (!email || !type) {
-      return Helpers.sendBadRequest(res, 'Email and type are required.');
+      return Helpers.sendBadRequest(res, 'Email is required.');
     }
 
     const user = await User.findOne({ where: { email } });
     if (!user) return Helpers.sendNotFound(res, 'User not found.');
-
     await Otp.destroy({
       where: {
         userId: user.id,
         type,
-        verified: false, 
       },
     });
 
     const rawOtp = Helpers.generateOtp();
-    console.log(rawOtp);
     const hashed = await Helpers.encrypt(rawOtp);
     const expiresAt = new Date(Date.now() + EXPIRATION_MINUTES * 60 * 1000);
 
@@ -61,7 +58,6 @@ const sendOtp = async (req, res) => {
 const verifyOtp = async (req, res) => {
   try {
     const { email, type, otp } = req.body;
-    console.log(otp);
 
     if (!email || !type || !otp) {
       return Helpers.sendBadRequest(res, 'Email, type, and OTP are required.');
@@ -90,6 +86,8 @@ const verifyOtp = async (req, res) => {
     otpEntry.verified = true;
     await otpEntry.save();
 
+    await otpEntry.destroy();
+    
     if (type === '2fa_login') {
       user.two_factor_enabled = true; 
       await user.save();

@@ -14,7 +14,7 @@ const ResetPasswordForm = ({ newPassword, setNewPassword, onSubmit, loading }) =
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
+    <div className="max-w-md mx-auto bg-slate-100 p-6 rounded-lg shadow-md">
       <h2 className="text-xl font-semibold text-gray-800 mb-4 text-center">Reset Your Password</h2>
       
       <div className="mb-4">

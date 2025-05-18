@@ -1,7 +1,7 @@
 import React from 'react';
 
 const SendOtpForm = ({ email, setEmail, onSubmit, loading }) => (
-  <div className="max-w-md mx-auto bg-white p-8 rounded-xl shadow-lg">
+  <div className="max-w-md mx-auto bg-slate-100 p-8 rounded-xl shadow-lg">
     <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">OTP Verification</h2>
     
     <div className="mb-6">

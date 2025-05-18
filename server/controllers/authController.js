@@ -1,9 +1,9 @@
 const Helpers = require("../utils/helpers");
 const User = require("../models/userModel");
-const Otp= require("../models/otpModel")
+const Otp = require("../models/otpModel")
 const jwt = require('jsonwebtoken');
 const { Op } = require("sequelize");
-const {sendEmail}= require("../services/emailService")
+const { sendEmail } = require("../services/emailService")
 
 
 const register = async (req, res) => {
@@ -14,21 +14,21 @@ const register = async (req, res) => {
       phone,
       password,
       confirm_password,
-      email
+      email,
+      two_factor_enabled
     } = req.body
 
-    if (!full_name.trim()  || !phone.trim() || !password.trim() || !email.trim()) {
+    if (!full_name.trim() || !phone.trim() || !password.trim() || !email.trim()) {
       return Helpers.sendBadRequest(res, "all field values required")
     }
     if (confirm_password !== password) {
-     return Helpers.sendBadRequest(res, "password mismatch")
+      return Helpers.sendBadRequest(res, "password mismatch")
     }
 
     const user = await User.findOne({
       where: {
         [Op.or]: [
           { email },
-          { phone }
         ]
       }
     });
@@ -43,10 +43,11 @@ const register = async (req, res) => {
       full_name,
       phone,
       password: hashedPassword,
-      email
+      email,
+      two_factor_enabled
     })
 
-   const token = jwt.sign(
+    const token = jwt.sign(
       { id: createdUser.id, },
       "process.env.JWT_SECRET",
       { expiresIn: '1d' }
@@ -56,15 +57,15 @@ const register = async (req, res) => {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
-      maxAge: 24 * 60 * 60 * 1000, 
-      path:"/"
+      maxAge: 24 * 60 * 60 * 1000,
+      path: "/"
     });
 
     return Helpers.sendCreated(res, { full_name, phone, email })
 
   } catch (err) {
     console.error(err);
-   return Helpers.sendInternalServerError(res, err.message || err)
+    return Helpers.sendInternalServerError(res, err.message || err)
   }
 
 }
@@ -85,7 +86,14 @@ const login = async (req, res) => {
     if (user.two_factor_enabled) {
       const rawOtp = Helpers.generateOtp();
       const hashedOtp = await Helpers.encrypt(rawOtp);
-      const expiresAt = new Date(Date.now() + 10 * 60 * 1000); 
+      const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+      await Otp.destroy({
+        where: {
+          userId: user.id,
+          type: "2fa_login",
+        },
+      });
 
       await Otp.create({
         userId: user.id,
@@ -113,7 +121,7 @@ const login = async (req, res) => {
       user: {
         email: user.email,
         name: user.full_name,
-        phone:user.phone
+        phone: user.phone
       },
     });
 
@@ -155,6 +163,8 @@ const verify2FALogin = async (req, res) => {
     otpEntry.verified = true;
     await otpEntry.save();
 
+    await otpEntry.destroy();
+
     const token = jwt.sign({ id: user.id }, "process.env.JWT_SECRET", { expiresIn: '1d' });
     res.cookie('token', token, {
       httpOnly: true,
@@ -168,7 +178,7 @@ const verify2FALogin = async (req, res) => {
       user: {
         email: user.email,
         name: user.full_name,
-        phone:user.phone
+        phone: user.phone
       },
       message: '2FA login successful.',
     });
@@ -185,24 +195,24 @@ const logout = async (req, res) => {
   try {
     res.clearCookie('token', {
       httpOnly: true,
-      secure: true, 
-      sameSite: 'none', 
+      secure: true,
+      sameSite: 'none',
       path: '/',
     });
 
 
-    return Helpers.sendOk(res,[], 'Logged out successfully' );
+    return Helpers.sendOk(res, [], 'Logged out successfully');
   } catch (error) {
-    return Helpers.sendInternalServerError(res );
-  } 
+    return Helpers.sendInternalServerError(res);
+  }
 };
 
-const verifyCookie = async(req,res)=>{
+const verifyCookie = async (req, res) => {
 
   try {
     const userId = req.user.id;
     const user = await User.findByPk(userId, {
-      attributes: [ 'full_name', 'email','phone']
+      attributes: ['full_name', 'email', 'phone']
     });
     if (!user) {
       return Helpers.sendNotFound(res, 'User not found');
@@ -210,7 +220,7 @@ const verifyCookie = async(req,res)=>{
 
     return Helpers.sendOk(res, user, 'User authenticated');
   } catch (err) {
-    return  Helpers.sendInternalServerError(res, 'Something went wrong');
+    return Helpers.sendInternalServerError(res, 'Something went wrong');
   }
 }
 
@@ -235,7 +245,7 @@ const updatePassword = async (req, res) => {
     }
 
     const hashedPassword = await Helpers.encrypt(newPassword);
-    
+
     user.password = hashedPassword;
     await user.save();
 
@@ -277,7 +287,7 @@ const resetPassword = async (req, res) => {
     user.password = hashedPassword;
     await user.save();
 
-     await verifiedOtp.destroy();
+    await verifiedOtp.destroy();
 
 
     return Helpers.sendOk(res, null, 'Password reset successful.');
@@ -288,8 +298,8 @@ const resetPassword = async (req, res) => {
 };
 
 
-const test= (req,res)=>{
-console.log(req.cookies)
+const test = (req, res) => {
+  console.log(req.cookies)
 }
 
-module.exports = { register, login ,test,logout ,verifyCookie,updatePassword,resetPassword,verify2FALogin}
+module.exports = { register, login, test, logout, verifyCookie, updatePassword, resetPassword, verify2FALogin }

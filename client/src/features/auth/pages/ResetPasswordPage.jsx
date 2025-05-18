@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useSelector, useDispatch} from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 import { sendOtp, verifyOtp, resetPassword, resetOtpState } from '../otpSlice';
@@ -8,41 +8,87 @@ import VerifyOtpForm from '../components/VerifyOtpForm';
 import ResetPasswordForm from '../components/ResetPasswordForm';
 
 const ResetPasswordPage = () => {
+
   const dispatch = useDispatch();
   const navigate = useNavigate()
-  const { loading, error, message } = useSelector((state) => state.otp);
+  const { loading, error } = useSelector((state) => state.otp);
 
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [step, setStep] = useState('sendOtp');
+  const [message, setMessage] = useState("")
 
   const handleSendOtp = async () => {
     const result = await dispatch(sendOtp({ email, type: 'forgot_password' }));
-    if (sendOtp.fulfilled.match(result)) setStep('verifyOtp');
+    if (sendOtp.fulfilled.match(result)) {
+      setStep('verifyOtp');
+      setMessage("OTP sent successfully")
+    }
   };
 
   const handleVerifyOtp = async () => {
     const result = await dispatch(verifyOtp({ email, type: 'forgot_password', otp }));
-    if (verifyOtp.fulfilled.match(result)) setStep('resetPassword');
+    if (verifyOtp.fulfilled.match(result)) {
+      setStep('resetPassword');
+      setMessage("OTP verified")
+
+    }
   };
 
-const handleResetPassword = async () => {
-  const result = await dispatch(resetPassword({ email, newPassword }));
-  if (resetPassword.fulfilled.match(result)) {
-    dispatch(resetOtpState());
-    setEmail('');
-    setOtp('');
-    setNewPassword('');
-    navigate('/'); 
-  }
-};
-  return (
-    <div className="max-w-md mx-auto mt-10 p-6 border rounded shadow">
-      <h2 className="text-2xl font-bold mb-4">Reset Password</h2>
+  const handleResetPassword = async () => {
+    const result = await dispatch(resetPassword({ email, newPassword }));
+    if (resetPassword.fulfilled.match(result)) {
+      dispatch(resetOtpState());
+      setEmail('');
+      setOtp('');
+      setNewPassword('');
+      navigate('/');
+    }
+  };
+  const goBack = () => {
+    setMessage("");
+    dispatch(resetOtpState())
+    if (step === 'verifyOtp') {
+      setStep('sendOtp');
+    } else if (step === 'resetPassword') {
+      setStep('verifyOtp');
+    } else {
+      navigate('/');
+    }
+  };
 
-      {error && <div className="mb-4 text-red-600">{error}</div>}
-      {message && <div className="mb-4 text-green-600">{message}</div>}
+  return (
+    <div className=" min-h-screen p-6 border rounded shadow bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100">
+      <button
+        onClick={goBack}
+        className="flex items-center text-blue-600 hover:text-blue-800 mb-4"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5 mr-1"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fillRule="evenodd"
+            d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+            clipRule="evenodd"
+          />
+        </svg>
+        Back
+      </button>
+
+      <h2 className="text-2xl font-semibold mb-4 text-center md:mt-10">Reset Password</h2>
+
+      <div className='w-full flex justify-center ' >
+
+        <div className={`mb-4 w-md  ${error ? 'text-red-600' : message ? 'text-green-600' : 'hidden'}`}>
+          {error || message}
+        </div>
+
+      </div>
+
 
       {step === 'sendOtp' && (
         <SendOtpForm email={email} setEmail={setEmail} onSubmit={handleSendOtp} loading={loading} />

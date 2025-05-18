@@ -48,7 +48,7 @@ const updateProfile = async (req, res) => {
 
     const userExists = await User.findOne({
       where: {
-        [Op.or]: [{ email }, { phone }],
+        [Op.or]: [{ email }],
         id: { [Op.ne]: userId }
       },
       transaction
