@@ -126,7 +126,8 @@ const Profile = () => {
                   Manage
                 </button>
               </div>
-              <SecurityView />
+              <SecurityView userProfileData={userProfile}
+              />
             </div>
           )}
 

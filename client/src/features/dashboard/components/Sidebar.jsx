@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Link } from 'react-router-dom';
 
 const Sidebar = ({ setIsCollapsed, isCollapsed }) => {
 
@@ -26,22 +26,26 @@ const Sidebar = ({ setIsCollapsed, isCollapsed }) => {
             </div>
 
             {!isCollapsed &&
-                <ul className="space-y-2  ">
-                    {[
-                        { name: 'Dashboard', icon: '🏠' },
-                        { name: 'Expenses', icon: '💰' },
-                        { name: 'Reports', icon: '📊' },
-                        { name: 'Settings', icon: '⚙️' }
-                    ].map((item) => (
-                        <li
-                            key={item.name}
-                            className={`flex items-center rounded-lg p-3 cursor-pointer transition-colors duration-200 hover:bg-slate-700 ${!isCollapsed ? 'justify-start' : 'justify-center'}`}
-                        >
-                            <span className={`${!isCollapsed ? 'mr-3' : ''} text-lg`}>{item.icon}</span>
-                            {!isCollapsed && <span className="font-medium">{item.name}</span>}
-                        </li>
-                    ))}
-                </ul>
+             <ul className="space-y-2">
+  {[
+    { name: 'Dashboard', icon: '🏠', path: '/dashboard' },
+    { name: 'Expenses', icon: '💰', path: '/dashboard/expenses' },
+    { name: 'Reports', icon: '📊', path: '/reports' },
+    { name: 'Settings', icon: '⚙️', path: '/settings' },
+  ].map((item) => (
+    <li key={item.name}>
+      <Link
+        to={item.path}
+        className={`flex items-center rounded-lg p-3 cursor-pointer transition-colors duration-200 hover:bg-slate-700 ${
+          !isCollapsed ? 'justify-start' : 'justify-center'
+        }`}
+      >
+        <span className={`${!isCollapsed ? 'mr-3' : ''} text-lg`}>{item.icon}</span>
+        {!isCollapsed && <span className="font-medium">{item.name}</span>}
+      </Link>
+    </li>
+  ))}
+</ul>
             }
 
         </div>

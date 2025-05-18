@@ -29,13 +29,14 @@ const indexModel= require("./models/indexModel")
 
 const authRoute=require("./routes/authRoute");
 const profileRoute=require("./routes/profileRoute");
-const otpRoute=require("./routes/otpRoute")
+const otpRoute=require("./routes/otpRoute");
+const expenseRoute= require("./routes/expenseRoute")
 
 
 app.use("/api",authRoute)
 app.use("/api",profileRoute);
 app.use("/api",otpRoute)
-
+app.use("/api",expenseRoute)
 
 
 

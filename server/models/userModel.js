@@ -8,10 +8,16 @@ class User extends Model {
             foreignKey: 'userId',
             onDelete: 'CASCADE',
         });
-      this.hasMany(models.Otp, {
-      foreignKey: 'userId',
-      onDelete: 'CASCADE',
-    });
+        this.hasMany(models.Otp, {
+            foreignKey: 'userId',
+            onDelete: 'CASCADE',
+        });
+        this.hasMany(models.Expense, {
+            foreignKey: 'userId',
+            as: 'expenses',
+            onDelete: 'CASCADE',
+        });
+
     }
 }
 
@@ -29,8 +35,8 @@ User.init({
     phone: {
         type: DataTypes.BIGINT,
         allowNull: false,
-        unique:false
-       
+        unique: false
+
     },
     email: {
         type: DataTypes.STRING,
@@ -46,10 +52,10 @@ User.init({
         allowNull: true,
         defaultValue: null
     },
-         two_factor_enabled: {
-          type: DataTypes.BOOLEAN,
-          defaultValue: false,
-        },
+    two_factor_enabled: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+    },
 },
     {
         sequelize,

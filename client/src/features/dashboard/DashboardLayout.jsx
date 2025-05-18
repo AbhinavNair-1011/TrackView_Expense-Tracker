@@ -9,7 +9,7 @@ const DashboardLayout = () => {
 
   useEffect(() => {
     const userAgent = navigator.userAgent;
-    const mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+    const mobile = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
     console.log(mobile)
     if (!mobile) {
       setIsCollapsed(false)

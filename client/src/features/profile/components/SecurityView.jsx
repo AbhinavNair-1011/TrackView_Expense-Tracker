@@ -1,6 +1,6 @@
 import React from 'react'
 
-const SecurityView = ({userProfileData,onSecurityManage}) => {
+const SecurityView = ({userProfileData}) => {
   return (
     
 
@@ -19,14 +19,17 @@ const SecurityView = ({userProfileData,onSecurityManage}) => {
                                 Two-Factor Authentication
                             </p>
                             <div className="flex items-center gap-2">
-                                <p className={`font-medium ${userProfileData?.two_fa_enabled ? 'text-green-600' : 'text-gray-600'}`}>
-                                    {userProfileData?.two_fa_enabled ? 'Enabled' : 'Disabled'}
-                                </p>
-                                {userProfileData?.two_fa_enabled && (
-                                    <span className="px-2 py-0.5 text-xs font-medium bg-green-100 text-green-800 rounded-full">
+                              
+                                {userProfileData?.two_fa_enabled ? (
+                                    <span className="px-2 py-1 mt-2 text-xs font-medium bg-green-100 text-green-800 rounded-full">
                                         Active
                                     </span>
-                                )}
+                                ) 
+                            :
+                               <span className="px-2 py-1 mt-2 text-xs font-medium bg-red-100 text-red-800 rounded-full">
+                                        Inactive
+                                    </span>
+                                    }
                             </div>
                         </div>
                      

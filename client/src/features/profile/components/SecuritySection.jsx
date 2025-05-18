@@ -50,7 +50,7 @@ const SecuritySection = ({ onEditToggle, onPasswordUpdate, loading, updateMessag
       setTimeout(() => {
         onEditToggle((prev) => !prev)
 
-      }, 2000);
+      }, 1000);
     } catch (error) {
       console.error('Failed to verify OTP:', error);
       setOtpError('Invalid OTP. Please try again.');

@@ -66,7 +66,7 @@ const PasswordUpdate = ({ onSubmit, loading , onEditToggle}) => {
     setTimeout(()=>{
         onEditToggle((prev)=>!prev)
 
-      },2000)
+      },1000)
 
     } catch (err) {
       setErrors({ updatePassword: err })
