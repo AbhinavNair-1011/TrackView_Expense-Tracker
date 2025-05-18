@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { updatePassword } from '../profileSlice';
 
-const PasswordUpdate = ({ onSubmit, loading }) => {
+const PasswordUpdate = ({ onSubmit, loading , onEditToggle}) => {
   const [passwords, setPasswords] = useState({
     current: '',
     new: '',
@@ -63,6 +63,10 @@ const PasswordUpdate = ({ onSubmit, loading }) => {
     new: '',
     confirm: '',
   })
+    setTimeout(()=>{
+        onEditToggle((prev)=>!prev)
+
+      },2000)
 
     } catch (err) {
       setErrors({ updatePassword: err })

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { updateProfile } from '../profileSlice';
 
-const PersonalInfoForm = ({ onSubmit, error, loading, userProfileData }) => {
+const PersonalInfoForm = ({ onSubmit, error, loading, userProfileData, onEditToggle }) => {
   const [formData, setFormData] = useState({
     full_name: '',
     email: '',
@@ -40,7 +40,11 @@ const PersonalInfoForm = ({ onSubmit, error, loading, userProfileData }) => {
 
     try {
       const result = await onSubmit(formData);
-      setUpdateMessage("Updated Successfully")
+      setUpdateMessage("Updated Successfully");
+      setTimeout(()=>{
+        onEditToggle((prev)=>!prev)
+
+      },2000)
 
     } catch (err) {
       setUpdateMessage("")
@@ -50,7 +54,6 @@ const PersonalInfoForm = ({ onSubmit, error, loading, userProfileData }) => {
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-      <h2 className="text-lg font-semibold text-gray-800 mb-4">Personal Information</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0">
           <div className="flex-1">

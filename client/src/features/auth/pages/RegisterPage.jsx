@@ -22,8 +22,8 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="min-h-screen  bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 flex flex-col justify-center  px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+    <div className="min-h-screen  bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 flex flex-col justify-center  px-1 lg:px-8">
+      <div className="sm:mx-auto sm:w-full md:max-lg">
         <h2 className="mt-6 text-center text-3xl md:text4xlfont-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
           Create Your Account
         </h2>

@@ -7,7 +7,7 @@ const ProfileDropdown = ({ user }) => {
   const navigate = useNavigate();
 
   return (
-    <div className="relative">
+    <div className="relative ">
       <button 
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center space-x-2 focus:outline-none"
@@ -39,7 +39,7 @@ const ProfileDropdown = ({ user }) => {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+        <div className="transition-all duration-300 ease-in-out z-30 absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1">
           <div className="px-4 py-2 border-b border-gray-100  text-black ">
             <p className="text-sm font-semibold capitalize ">{user?.full_name}</p>
             <p className="text-xs truncate capitalize">{user?.email}</p>

@@ -56,7 +56,7 @@ const LoginForm = ({ onLoginSubmit, onOtpSubmit, loading, error }) => {
   };
 
   return (
-  <div className="max-w-md w-full mx-auto  p-8 rounded-2xl shadow-md">
+  <div className="max-w-lg w-full mx-auto p-3 md:p-6 rounded-2xl shadow-md">
     <div className="">
       <div className="text-center ">
         <h2 className="text-xl  text-transparent mb-4 bg-clip-text bg-black">

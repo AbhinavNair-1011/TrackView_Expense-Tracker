@@ -1,14 +1,13 @@
-// Navbar.js
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import ProfileDropdown from './ProfileDropdown';
 import { useSelector } from 'react-redux';
 
 const Navbar = () => {
-  const user = useSelector(state => state.auth.user); // Assuming you store user data in Redux
+  const user = useSelector(state => state.auth.user); 
 
   return (
-    <nav className="w-full fixed z-20 bg-gray-800 text-white px-6 py-3 flex justify-between items-center shadow-lg">
+    <nav className= " transition-all duration-300 ease-in-out w-full fixed z-20 bg-gray-800 text-white px-6 py-3 flex justify-between items-center shadow-lg">
       <Link to="/dashboard" className="text-xl font-bold flex items-center">
         <svg 
           xmlns="http://www.w3.org/2000/svg" 

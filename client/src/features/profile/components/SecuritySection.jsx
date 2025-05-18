@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { sendOtp, verifyOtp } from '../../auth/otpSlice';
 import { useEffect } from 'react';
 
-const SecuritySection = ({ onPasswordUpdate, loading, updateMessage, userProfileData }) => {
+const SecuritySection = ({ onEditToggle, onPasswordUpdate, loading, updateMessage, userProfileData }) => {
   const { loading: faLoading } = useSelector((state) => state.otp);
 
   const dispatch = useDispatch();
@@ -13,11 +13,11 @@ const SecuritySection = ({ onPasswordUpdate, loading, updateMessage, userProfile
   const [otp, setOtp] = useState('');
   const [otpError, setOtpError] = useState('');
   const [email, setEmail] = useState("");
-  console.log(userProfileData)
+
   useEffect(() => {
     if (userProfileData) {
       setEmail(userProfileData.email);
-      setTwoFactorEnabled( userProfileData.two_fa_enabled===true)
+      setTwoFactorEnabled(userProfileData.two_fa_enabled === true)
     }
   }, [userProfileData]);
 
@@ -43,9 +43,14 @@ const SecuritySection = ({ onPasswordUpdate, loading, updateMessage, userProfile
     try {
       setOtpError('');
       await dispatch(verifyOtp({ email, otp, type: '2fa_login' })).unwrap();
+      
       setTwoFactorEnabled(true);
       setOtpStep('enabled');
       setOtp('');
+      setTimeout(() => {
+        onEditToggle((prev) => !prev)
+
+      }, 2000);
     } catch (error) {
       console.error('Failed to verify OTP:', error);
       setOtpError('Invalid OTP. Please try again.');
@@ -53,7 +58,7 @@ const SecuritySection = ({ onPasswordUpdate, loading, updateMessage, userProfile
   };
 
 
-  
+
   const handleCancelVerifyOtp = () => {
     setOtpStep("initial");
     setOtpError("");
@@ -61,12 +66,12 @@ const SecuritySection = ({ onPasswordUpdate, loading, updateMessage, userProfile
   }
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-      <h2 className="text-lg font-semibold text-gray-800 mb-4">Security</h2>
       <div className="space-y-6">
         <PasswordUpdate
           onSubmit={onPasswordUpdate}
           loading={loading}
           updateMessage={updateMessage}
+          onEditToggle={onEditToggle}
         />
 
         <div className="border-t border-gray-200 pt-4">
@@ -82,9 +87,9 @@ const SecuritySection = ({ onPasswordUpdate, loading, updateMessage, userProfile
               onClick={handleEnable2FA}
               disabled={twoFactorEnabled ? true : (loading ? true : false)}
               className={`mt-3 px-3 py-1.5 text-sm rounded-md transition-colors ${loading
-                  ? 'bg-blue-400 cursor-not-allowed text-white'
-                  : 'bg-blue-600 hover:bg-blue-700 text-white'
-                } ${twoFactorEnabled ? 'bg-green-400 cursor-not-allowed hover:bg-green-400'  : ''}`}
+                ? 'bg-blue-400 cursor-not-allowed text-white'
+                : 'bg-blue-600 hover:bg-blue-700 text-white'
+                } ${twoFactorEnabled ? 'bg-green-400 cursor-not-allowed hover:bg-green-400' : ''}`}
 
             >
               {faLoading ? 'Sending OTP...' : (twoFactorEnabled ? '2FA Active' : 'Enable 2FA')}
@@ -122,13 +127,13 @@ const SecuritySection = ({ onPasswordUpdate, loading, updateMessage, userProfile
           )}
 
           {otpStep === 'enabled' && (
-              <button
+            <button
               onClick={handleEnable2FA}
               disabled={twoFactorEnabled ? true : (loading ? true : false)}
               className={`mt-3 px-3 py-1.5 text-sm rounded-md transition-colors ${loading
-                  ? 'bg-blue-400 cursor-not-allowed text-white'
-                  : 'bg-blue-600 hover:bg-blue-700 text-white'
-                } ${twoFactorEnabled ? 'bg-green-400 cursor-not-allowed hover:bg-green-400'  : ''}`}
+                ? 'bg-blue-400 cursor-not-allowed text-white'
+                : 'bg-blue-600 hover:bg-blue-700 text-white'
+                } ${twoFactorEnabled ? 'bg-green-400 cursor-not-allowed hover:bg-green-400' : ''}`}
 
             >
               {faLoading ? 'Sending OTP...' : (twoFactorEnabled ? '2FA Active' : 'Enable 2FA')}

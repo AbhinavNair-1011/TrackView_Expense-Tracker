@@ -36,7 +36,7 @@ const RegisterForm = ({ onSubmit, loading, error }) => {
   };
 
   return (
-<form onSubmit={handleSubmit} className="space-y-5  shadow-md p-8 rounded-2xl">
+<form onSubmit={handleSubmit} className="space-y-5  shadow-md p-3 md:p-6 rounded-2xl">
   
 
   {(formError || error) && (

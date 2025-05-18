@@ -15,7 +15,7 @@ const ProfileAvatar = () => {
   };
 
   return (
-    <div className="relative group">
+    <div className="relative pt-4">
       <div className="w-16 h-16 rounded-full bg-gray-200 overflow-hidden">
         {avatar ? (
           <img src={avatar} alt="Profile" className="w-full h-full object-cover" />
