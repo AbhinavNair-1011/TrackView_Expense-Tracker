@@ -10,12 +10,11 @@ const ExpenseForm = ({ expenseId, onClose }) => {
   const editingExpense = expenseId ? expenses.find((e) => e.id === expenseId) : null;
 
   const [formData, setFormData] = useState({
-    amount: '',
-    category: '',
-    description: '',
-    date: new Date().toISOString().split('T')[0],
-  });
-
+  amount: '',
+  category: '',
+  description: '',
+  date: new Date().toLocaleDateString('en-CA') 
+});
   const [errors, setErrors] = useState({});
 
   useEffect(() => {

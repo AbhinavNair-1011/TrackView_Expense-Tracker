@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchExpenses } from '../expenseSlice';
@@ -6,7 +6,17 @@ import { useEffect } from 'react';
 
 
 const ExpenseList = ({ pagination, expenses, onEdit, page, setPage, onDelete }) => {
+ const listTopRef = useRef(null);
 
+  const handlePreviousPageChange = (page) => {
+  setPage(page => Math.max(page - 1, 1))
+    listTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+const handleNextPageChange=()=>{
+   setPage(page => Math.min(page + 1, pagination?.pages || 1))
+      listTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+
+}
   if (!expenses.length) {
     return (
       <div className="bg-gray-50 rounded-lg p-8 text-center">
@@ -16,7 +26,7 @@ const ExpenseList = ({ pagination, expenses, onEdit, page, setPage, onDelete }) 
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 min-h-1" ref={listTopRef} >
       <div className="hidden md:grid grid-cols-12 gap-4 px-4 py-3 bg-gray-50 text-xs font-medium text-gray-500 uppercase tracking-wider rounded-t-lg">
         <div className="col-span-3">Date</div>
         <div className="col-span-2">Category</div>
@@ -24,9 +34,9 @@ const ExpenseList = ({ pagination, expenses, onEdit, page, setPage, onDelete }) 
         <div className="col-span-2 text-right">Amount</div>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2 "   >
         {expenses.map(({ id, date, category, description, amount }) => (
-          <div key={id} className="group bg-white border border-gray-200 rounded-lg hover:shadow-sm transition-shadow p-4">
+          <div key={id}  className="group bg-white border border-gray-200 rounded-lg hover:shadow-sm transition-shadow p-4">
             <div className="sm:hidden grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
               <div className="flex flex-col space-y-1">
                 <span className="text-xs text-gray-500">Date</span>
@@ -41,7 +51,7 @@ const ExpenseList = ({ pagination, expenses, onEdit, page, setPage, onDelete }) 
 
               <div className="flex flex-col items-end space-y-1">
                 <span className="text-xs text-gray-500">Amount</span>
-                <span className="font-medium">${amount}</span>
+                <span className="font-medium">{amount}</span>
               </div>
 
               <div className="flex flex-col space-y-1">
@@ -112,7 +122,7 @@ const ExpenseList = ({ pagination, expenses, onEdit, page, setPage, onDelete }) 
                 {description || <span className="text-gray-400">—</span>}
               </div>
               <div className="col-span-2 text-right text-sm font-medium">
-                ${amount}
+                {amount}
               </div>
               <div className="col-span-1 flex justify-end space-x-2">
                 <button onClick={() => onEdit(id)} className="text-gray-400 hover:text-gray-600">
@@ -137,7 +147,7 @@ const ExpenseList = ({ pagination, expenses, onEdit, page, setPage, onDelete }) 
         </div>
         <div className="flex items-center space-x-1">
           <button
-            onClick={() => setPage(page => Math.max(page - 1, 1))}
+            onClick={handlePreviousPageChange}
             disabled={pagination?.page <= 1}
             className="px-3 py-1 text-sm border border-gray-300 rounded-md text-gray-700 disabled:opacity-50"
           >
@@ -162,7 +172,7 @@ const ExpenseList = ({ pagination, expenses, onEdit, page, setPage, onDelete }) 
             })}
           </div>
           <button
-            onClick={() => setPage(page => Math.min(page + 1, pagination?.pages || 1))}
+            onClick={handleNextPageChange}
             disabled={pagination?.page >= pagination?.pages}
             className="px-3 py-1 text-sm border border-gray-300 rounded-md text-gray-700 disabled:opacity-50"
           >

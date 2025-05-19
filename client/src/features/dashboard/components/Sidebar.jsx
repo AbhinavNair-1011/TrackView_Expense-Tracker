@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-const Sidebar = ({ setIsCollapsed, isCollapsed }) => {
+const Sidebar = ({ setIsCollapsed, isCollapsed,isMobile }) => {
 
  
 
@@ -33,7 +33,14 @@ const Sidebar = ({ setIsCollapsed, isCollapsed }) => {
     { name: 'Reports', icon: '📊', path: '/reports' },
     { name: 'Settings', icon: '⚙️', path: '/settings' },
   ].map((item) => (
-    <li key={item.name}>
+    <li key={item.name} 
+    onClick={()=>{
+      if(isMobile){
+        console.log("asddas")
+        setIsCollapsed((prev)=>!prev)}
+      }
+      
+    }>
       <Link
         to={item.path}
         className={`flex items-center rounded-lg p-3 cursor-pointer transition-colors duration-200 hover:bg-slate-700 ${

@@ -5,13 +5,16 @@ import Sidebar from './components/Sidebar';
 
 const DashboardLayout = () => {
   const [isCollapsed, setIsCollapsed] = useState(true);
-
+  const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
     const userAgent = navigator.userAgent;
     const mobile = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
-    console.log(mobile)
+    if (mobile) {
+      setIsMobile(true)
+    }
     if (!mobile) {
+      setIsMobile(false)
       setIsCollapsed(false)
     }
 
@@ -24,6 +27,7 @@ const DashboardLayout = () => {
 
       <div className="flex mt-14 flex-col">
         <Sidebar
+          isMobile={isMobile}
           isCollapsed={isCollapsed}
           setIsCollapsed={setIsCollapsed}
         />

@@ -6,6 +6,7 @@ import ExpenseForm from '../components/ExpenseForm';
 import ExpenseSummary from '../components/ExpenseSummary';
 import { CircleFadingArrowUp } from 'lucide-react';
 import ExpenseInfoCard from '../components/ExpenseInfoCard';
+import ExpenseFilters from '../components/ExpenseFilters';
 
 const ExpensePage = () => {
   const dispatch = useDispatch();
@@ -15,15 +16,23 @@ const ExpensePage = () => {
   const [page, setPage] = useState(1);
   const [activeTab, setActiveTab] = useState('list');
 
+  const [search, setSearch] = useState('');
+  const [category, setCategory] = useState('');
+  const [sort, setSort] = useState('');
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
+
 
   useEffect(() => {
     dispatch(fetchExpenseSummary());
   }, [dispatch]);
 
-  useEffect(() => {
-    dispatch(fetchExpenses({ page }));
-  }, [dispatch, page]);
-
+useEffect(() => {
+  const bothDatesSelected = (!fromDate && !toDate) || (fromDate && toDate);
+  if (bothDatesSelected) {
+    dispatch(fetchExpenses({ page, search, category, sort, fromDate, toDate }));
+  }
+}, [dispatch, page, search, category, sort, fromDate, toDate]);
   const handleAddClick = () => {
     setEditExpenseId(null);
     setShowForm(true);
@@ -58,6 +67,7 @@ const ExpensePage = () => {
 
   return (
     <div className="max-w-7xl mx-auto">
+
       <ExpenseInfoCard />
 
       <ExpenseSummary summary={summary} />
@@ -70,7 +80,7 @@ const ExpensePage = () => {
       )}
 
 
-      <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
 
         <div>
           <p className="text-gray-600 hidden sm:flex">Manage your expenses efficiently</p>
@@ -82,8 +92,9 @@ const ExpensePage = () => {
           + Add Expense
         </button>
 
-      </header>
+      </div>
       <div className="mb-6 border-b border-gray-200">
+
         <nav className="-mb-px flex space-x-8">
           <button
             onClick={() => setActiveTab('list')}
@@ -106,6 +117,18 @@ const ExpensePage = () => {
         </div>
       ) : (
         <>
+          <ExpenseFilters
+            search={search}
+            onSearchChange={setSearch}
+            category={category}
+            onCategoryChange={setCategory}
+            sort={sort}
+            onSortChange={setSort}
+            fromDate={fromDate}
+            toDate={toDate}
+            onFromDateChange={setFromDate}
+            onToDateChange={setToDate}
+          />
 
           <ExpenseList
             pagination={pagination}

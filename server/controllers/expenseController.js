@@ -1,6 +1,6 @@
 const Expense = require('../models/expenseModel');
 const Helpers = require('../utils/helpers');
-const {Op,fn,col}=require("sequelize")
+const { Op, fn, col } = require("sequelize")
 const create = async (req, res) => {
     try {
         const { amount, category, description, date } = req.body;
@@ -40,7 +40,7 @@ const create = async (req, res) => {
 
 const getAll = async (req, res) => {
     try {
-        const { page = '1', limit = '10', category, startDate, endDate } = req.query;
+        const { page = '1', limit = '10', category, fromDate, toDate , search, sort } = req.query;
 
         const errors = [];
 
@@ -58,12 +58,15 @@ const getAll = async (req, res) => {
             errors.push('Category filter must be a valid string');
         }
 
-        if (startDate && isNaN(Date.parse(startDate))) {
+        if (fromDate && isNaN(Date.parse(fromDate))) {
             errors.push('startDate filter must be a valid date');
         }
 
-        if (endDate && isNaN(Date.parse(endDate))) {
+        if (toDate && isNaN(Date.parse(toDate))) {
             errors.push('endDate filter must be a valid date');
+        }
+        if (search && typeof search !== 'string') {
+            errors.push('Search must be a valid string');
         }
 
         if (errors.length > 0) {
@@ -75,11 +78,35 @@ const getAll = async (req, res) => {
         if (category) {
             where.category = category.trim();
         }
+        if (fromDate || toDate) {
+            if (fromDate && toDate) {
+                where.date = { [Op.between]: [new Date(fromDate), new Date(toDate)] };
+            } else if (fromDate) {
+                where.date = { [Op.gte]: new Date(fromDate) };
+            } else if (toDate) {
+                where.date = { [Op.lte]: new Date(toDate) };
+            }
+        }
 
-        if (startDate || endDate) {
-            where.date = {};
-            if (startDate) where.date['$gte'] = new Date(startDate);
-            if (endDate) where.date['$lte'] = new Date(endDate);
+        let order = [['date', 'DESC']];
+        
+        if(where.date){
+            order=[['date', 'ASC']];
+        }
+
+        if (sort === 'amount_asc') {
+            order = [['amount', 'ASC']];
+        } else if (sort === 'amount_desc') {
+            order = [['amount', 'DESC']];
+        } else if (sort === 'date_asc') {
+            order = [['date', 'ASC']];
+        } else if (sort === 'date_desc') {
+            order = [['date', 'DESC']];
+        }
+
+
+        if (search) {
+            where.description = { [Op.like]: `%${search}%` }
         }
 
         const offset = (pageNum - 1) * limitNum;
@@ -88,8 +115,9 @@ const getAll = async (req, res) => {
             where,
             limit: limitNum,
             offset,
-            order: [['date', 'DESC']],
+            order,
         });
+
 
         return Helpers.sendOk(res, {
             expenses,
@@ -109,7 +137,7 @@ const getAll = async (req, res) => {
 const getOne = async (req, res) => {
     try {
 
-                console.log("one")
+        console.log("one")
 
         const id = req.params.id;
 
@@ -183,7 +211,7 @@ const remove = async (req, res) => {
 const getSummary = async (req, res) => {
     try {
         console.log("summary")
-        const userId="488a5604-9667-488c-9d05-ee0c7a1b73f2"
+        const userId = "488a5604-9667-488c-9d05-ee0c7a1b73f2"
 
         const totalAmount = await Expense.sum('amount');
 
@@ -220,7 +248,7 @@ const getSummary = async (req, res) => {
         });
     } catch (err) {
         console.error(err)
-        return Helpers.sendInternalServerError(res,"Failed to fetch expense summary");
+        return Helpers.sendInternalServerError(res, "Failed to fetch expense summary");
     }
 };
 
