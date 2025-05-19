@@ -5,6 +5,7 @@ import {
   getExpenseAPI,
   updateExpenseAPI,
   deleteExpenseAPI,
+  getExpenseSummaryAPI,
 } from './expenseApi';
 
 
@@ -47,24 +48,40 @@ export const updateExpense = createAsyncThunk(
 );
 
 export const deleteExpense = createAsyncThunk(
-  'expenses/delete',
+  'expenses/deleteExpense',
   async (id, { rejectWithValue }) => {
     try {
       const response = await deleteExpenseAPI(id);
-      return { id, message: response.data.message };
+      return id; 
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
   }
 );
+
+export const fetchExpenseSummary = createAsyncThunk(
+  'expenses/fetchSummary',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await getExpenseSummaryAPI();
+      console.log(response)
+      return response.data?.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || err.message);
+    }
+  }
+);
+
 const initialState = {
   expenses: [],
   loading: false,
   error: null,
   currentExpense: null,
-  pagination: {
+  pagination: null,
+  summary: null,
+  summaryLoading: false,
+  summaryError: null,
 
-  }
 };
 export const expenseSlice = createSlice({
   name: 'expenses',
@@ -118,18 +135,32 @@ export const expenseSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      .addCase(deleteExpense.pending, (state) => {
+      .addCase(fetchExpenseSummary.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchExpenseSummary.fulfilled, (state, action) => {
+        state.loading = false;
+        state.summary = action.payload;
+      })
+      .addCase(fetchExpenseSummary.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+          .addCase(deleteExpense.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(deleteExpense.fulfilled, (state, action) => {
         state.loading = false;
-        state.expenses = state.expenses.filter(e => e.id !== action.payload.id);
+        const id = action.payload;
+        state.expenses = state.expenses.filter(expense => expense.id !== id);
       })
       .addCase(deleteExpense.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
+
   },
 });
 

@@ -110,9 +110,9 @@ const login = async (req, res) => {
 
     const token = jwt.sign({ id: user.id }, "process.env.JWT_SECRET", { expiresIn: '1d' });
     res.cookie('token', token, {
-      httpOnly: false,
-      secure: false,
-      sameSite: 'none',
+    // httpOnly: true,
+      // secure: true,
+      // sameSite: 'none',
       maxAge: 24 * 60 * 60 * 1000,
       path: '/',
     });
@@ -167,9 +167,9 @@ const verify2FALogin = async (req, res) => {
 
     const token = jwt.sign({ id: user.id }, "process.env.JWT_SECRET", { expiresIn: '1d' });
     res.cookie('token', token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none',
+      // httpOnly: true,
+      // secure: true,
+      // sameSite: 'none',
       maxAge: 24 * 60 * 60 * 1000,
       path: '/',
     });
@@ -194,9 +194,9 @@ const verify2FALogin = async (req, res) => {
 const logout = async (req, res) => {
   try {
     res.clearCookie('token', {
-      httpOnly: false,
-      secure: false,
-      sameSite: 'none',
+     // httpOnly: true,
+      // secure: true,
+      // sameSite: 'none',
       path: '/',
     });
 

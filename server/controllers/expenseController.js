@@ -1,5 +1,6 @@
 const Expense = require('../models/expenseModel');
 const Helpers = require('../utils/helpers');
+const {Op,fn,col}=require("sequelize")
 const create = async (req, res) => {
     try {
         const { amount, category, description, date } = req.body;
@@ -107,6 +108,9 @@ const getAll = async (req, res) => {
 
 const getOne = async (req, res) => {
     try {
+
+                console.log("one")
+
         const id = req.params.id;
 
         const expense = await Expense.findOne({
@@ -128,7 +132,7 @@ const update = async (req, res) => {
         const { amount, category, description, date } = req.body;
 
 
-       
+
         const expense = await Expense.findOne({
             where: { id, userId: req.user.id },
         });
@@ -160,20 +164,64 @@ const update = async (req, res) => {
 };
 
 const remove = async (req, res) => {
-  try {
-    const id = req.params.id;
+    try {
+        const id = req.params.id;
 
-    const expense = await Expense.findOne({
-      where: { id, userId: req.user.id },
-    });
-    if (!expense) return Helpers.sendNotFound(res, 'Expense not found');
+        const expense = await Expense.findOne({
+            where: { id, userId: req.user.id },
+        });
+        if (!expense) return Helpers.sendNotFound(res, 'Expense not found');
 
-    await expense.destroy();
-    
-    return Helpers.sendDeleted(res, 'Expense deleted successfully');
-  } catch (error) {
-    return Helpers.sendInternalServerError(res, error.message);
-  }
+        await expense.destroy();
+
+        return Helpers.sendDeleted(res, 'Expense deleted successfully');
+    } catch (error) {
+        return Helpers.sendInternalServerError(res, error.message);
+    }
+};
+
+const getSummary = async (req, res) => {
+    try {
+        console.log("summary")
+        const userId="488a5604-9667-488c-9d05-ee0c7a1b73f2"
+
+        const totalAmount = await Expense.sum('amount');
+
+        const totalCount = await Expense.count();
+
+        const mostRecent = await Expense.findOne({
+            order: [['date', 'DESC']],
+            limit: 1,
+        });
+
+        const category = await Expense.findAll({
+            where: { userId },
+            attributes: ['category', [fn('SUM', col('amount')), 'total']],
+            group: ['category']
+        });
+
+        const mostExpensiveCategory = category.reduce(
+            (max, item) => {
+                const amount = Number(item.get('total'));
+                const name = item.get('category');
+                return amount > max.amount
+                    ? { category: name, amount }
+                    : max;
+            },
+            { category: '', amount: 0 }
+        );
+
+
+        return Helpers.sendOk(res, {
+            totalAmount,
+            totalCount,
+            mostRecentExpense: mostRecent || null,
+            mostExpensiveCategory: mostExpensiveCategory || { category: null, totalAmount: 0 }
+        });
+    } catch (err) {
+        console.error(err)
+        return Helpers.sendInternalServerError(res,"Failed to fetch expense summary");
+    }
 };
 
 module.exports = {
@@ -182,4 +230,5 @@ module.exports = {
     getOne,
     update,
     remove,
+    getSummary
 };

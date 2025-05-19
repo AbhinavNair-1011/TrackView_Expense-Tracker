@@ -5,7 +5,7 @@ import { fetchExpenses } from '../expenseSlice';
 import { useEffect } from 'react';
 
 
-const ExpenseList = ({ pagination, expenses, onEdit, page, setPage }) => {
+const ExpenseList = ({ pagination, expenses, onEdit, page, setPage, onDelete }) => {
 
   if (!expenses.length) {
     return (
@@ -16,155 +16,160 @@ const ExpenseList = ({ pagination, expenses, onEdit, page, setPage }) => {
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-gray-200 shadow-lg">
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gradient-to-r from-blue-50 to-indigo-50">
-          <tr>
-            <th className="px-6 py-4 text-left text-sm font-semibold text-indigo-600 uppercase tracking-wider">
-              <div className="flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                Date
+    <div className="space-y-4">
+      <div className="hidden md:grid grid-cols-12 gap-4 px-4 py-3 bg-gray-50 text-xs font-medium text-gray-500 uppercase tracking-wider rounded-t-lg">
+        <div className="col-span-3">Date</div>
+        <div className="col-span-2">Category</div>
+        <div className="col-span-4">Description</div>
+        <div className="col-span-2 text-right">Amount</div>
+      </div>
+
+      <div className="space-y-2">
+        {expenses.map(({ id, date, category, description, amount }) => (
+          <div key={id} className="group bg-white border border-gray-200 rounded-lg hover:shadow-sm transition-shadow p-4">
+            <div className="sm:hidden grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
+              <div className="flex flex-col space-y-1">
+                <span className="text-xs text-gray-500">Date</span>
+                <span className="font-medium">
+                  {new Date(date).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                  })}
+                </span>
               </div>
-            </th>
-            <th className="px-6 py-4 text-left text-sm font-semibold text-indigo-600 uppercase tracking-wider">
-              <div className="flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                </svg>
-                Category
+
+              <div className="flex flex-col items-end space-y-1">
+                <span className="text-xs text-gray-500">Amount</span>
+                <span className="font-medium">${amount}</span>
               </div>
-            </th>
-            <th className="px-6 py-4 text-left text-sm font-semibold text-indigo-600 uppercase tracking-wider">
-              <div className="flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                Description
+
+              <div className="flex flex-col space-y-1">
+                <span className="text-xs text-gray-500">Category</span>
+                <span
+                  className={`text-xs font-medium  rounded-full w-fit ${category === 'food'
+                      ? 'bg-green-50 text-green-700'
+                      : category === 'transport'
+                        ? 'bg-blue-50 text-blue-700'
+                        : category === 'housing'
+                          ? 'bg-purple-50 text-purple-700'
+                          : category === 'entertainment'
+                            ? 'bg-yellow-50 text-yellow-700'
+                            : 'bg-gray-50 text-gray-700'
+                    }`}
+                >
+                  {category.charAt(0).toUpperCase() + category.slice(1)}
+                </span>
               </div>
-            </th>
-            <th className="px-6 py-4 text-right text-sm font-semibold text-indigo-600 uppercase tracking-wider">
-              <div className="flex items-center justify-end gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Amount
+
+              <div className="flex justify-end items-end space-x-2">
+                <button onClick={() => onEdit(id)} className="text-gray-400 hover:text-gray-600">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                  </svg>
+                </button>
+                <button onClick={() => onDelete(id)} className="text-gray-400 hover:text-gray-600">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      fillRule="evenodd"
+                      d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </button>
               </div>
-            </th>
-            <th className="px-6 py-4 text-center text-sm font-semibold text-indigo-600 uppercase tracking-wider">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-200 bg-white">
-          {expenses.map(({ id, date, category, description, amount }) => (
-            <tr
-              key={id}
-              className="transition-all hover:bg-indigo-50/50 hover:shadow-sm h-16 "
-            >
-              <td className="whitespace-nowrap px-6">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-lg bg-indigo-100 text-indigo-600 mr-4 font-medium">
-                    {new Date(date).getDate()}
-                  </div>
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">
-                      {new Date(date).toLocaleDateString('en-US', { weekday: 'short' })}
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      {new Date(date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
-                    </div>
-                  </div>
+
+              {description && (
+                <div className="col-span-2">
+                  <span className="text-xs text-gray-500">Notes</span>
+                  <p className="text-sm text-gray-700 line-clamp-2">{description}</p>
                 </div>
-              </td>
-              <td className="whitespace-nowrap px-6 ">
-                <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${category === 'food' ? 'bg-green-100 text-green-800' :
-                  category === 'transport' ? 'bg-blue-100 text-blue-800' :
-                    category === 'housing' ? 'bg-purple-100 text-purple-800' :
-                      category === 'entertainment' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-gray-100 text-gray-800'
+              )}
+            </div>
+
+
+            <div className="hidden sm:grid grid-cols-12 gap-4 items-center">
+              <div className="col-span-3 text-sm">
+                {new Date(date).toLocaleDateString('en-US', {
+                  weekday: 'short',
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric'
+                })}
+              </div>
+
+              <div className="col-span-2">
+                <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${category === 'food' ? 'bg-green-50 text-green-700' :
+                  category === 'transport' ? 'bg-blue-50 text-blue-700' :
+                    category === 'housing' ? 'bg-purple-50 text-purple-700' :
+                      category === 'entertainment' ? 'bg-yellow-50 text-yellow-700' :
+                        'bg-gray-50 text-gray-700'
                   }`}>
                   {category.charAt(0).toUpperCase() + category.slice(1)}
                 </span>
-              </td>
-              <td className="px-6 py-4 max-w-xs">
-                <p className="text-sm text-gray-800 truncate hover:text-clip">
-                  {description || <span className="text-gray-400">No description</span>}
-                </p>
-              </td>
-              <td className="whitespace-nowrap px-6  text-right">
-                <span className="text-base font-semibold text-gray-900">
-                  {amount}
-                </span>
-              </td>
-              <td className="whitespace-nowrap px-6 text-center">
-                <div className="flex justify-center space-x-3">
-                  <button
-                    onClick={() => onEdit(id)}
-                    className="text-indigo-600 hover:text-indigo-900 p-2 rounded-full hover:bg-indigo-100 transition-all"
-                    title="Edit"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                  </button>
-                  <button
-                    onClick={() => onDelete(id)}
-                    className="text-red-600 hover:text-red-900 p-2 rounded-full hover:bg-red-100 transition-all"
-                    title="Delete"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-
-      <div className="flex justify-center mt-6 space-x-2">
-        <button
-          onClick={() => setPage(page => Math.max(page - 1, 1))}
-          disabled={pagination?.page <= 1}
-          className="px-4 py-2 rounded bg-indigo-600 text-white disabled:opacity-50"
-        >
-          Prev
-        </button>
-
-        {[...Array(pagination?.pages || 1)].map((_, index) => {
-          const pageNumber = index + 1;
-          const isActive = pagination?.page === pageNumber;
-
-          return (
-            <button
-              key={pageNumber}
-              onClick={() => setPage(pageNumber)}
-              className={`px-3 py-2 rounded ${isActive
-                  ? 'bg-indigo-700 text-white'
-                  : 'bg-indigo-100 text-indigo-700'
-                }`}
-            >
-              {pageNumber}
-            </button>
-          );
-        })}
-
-        <button
-          onClick={() => setPage(page => Math.min(page + 1, pagination?.pages || 1))}
-          disabled={pagination?.page >= pagination?.pages}
-          className="px-4 py-2 rounded bg-indigo-600 text-white disabled:opacity-50"
-        >
-          Next
-        </button>
+              </div>
+              <div className="col-span-4 text-sm text-gray-700 truncate">
+                {description || <span className="text-gray-400">—</span>}
+              </div>
+              <div className="col-span-2 text-right text-sm font-medium">
+                ${amount}
+              </div>
+              <div className="col-span-1 flex justify-end space-x-2">
+                <button onClick={() => onEdit(id)} className="text-gray-400 hover:text-gray-600">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                  </svg>
+                </button>
+                <button onClick={() => onDelete(id)} className="text-gray-400 hover:text-gray-600">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
 
-
-
-
+      <div className="flex flex-col sm:flex-row items-center justify-between px-4 py-3 bg-gray-50 border-t border-gray-200 rounded-b-lg">
+        <div className="text-sm text-gray-500 mb-2 sm:mb-0">
+          Showing page {pagination?.page} of {pagination?.pages}
+        </div>
+        <div className="flex items-center space-x-1">
+          <button
+            onClick={() => setPage(page => Math.max(page - 1, 1))}
+            disabled={pagination?.page <= 1}
+            className="px-3 py-1 text-sm border border-gray-300 rounded-md text-gray-700 disabled:opacity-50"
+          >
+            Previous
+          </button>
+          <div className="flex space-x-1">
+            {[...Array(Math.min(5, pagination?.pages || 1))].map((_, i) => {
+              const pageNum = pagination?.page <= 3
+                ? i + 1
+                : Math.min(pagination?.pages || 1, pagination?.page + i - 2);
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => setPage(pageNum)}
+                  className={`px-3 py-1 text-sm rounded-md ${pagination?.page === pageNum
+                    ? 'bg-gray-200 text-gray-800'
+                    : 'text-gray-700 hover:bg-gray-100'}`}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
+          </div>
+          <button
+            onClick={() => setPage(page => Math.min(page + 1, pagination?.pages || 1))}
+            disabled={pagination?.page >= pagination?.pages}
+            className="px-3 py-1 text-sm border border-gray-300 rounded-md text-gray-700 disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

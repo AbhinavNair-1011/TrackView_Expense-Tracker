@@ -13,11 +13,15 @@
     "@headlessui/react": "^2.2.3",
     "@reduxjs/toolkit": "^2.8.2",
     "axios": "^1.9.0",
+    "date-fn": "^0.0.2",
+    "date-fns": "^4.1.0",
     "lucide-react": "^0.511.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-icons": "^5.5.0",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.6.0",
+    "recharts": "^2.15.3",
     "redux": "^5.0.1"
   },
   "devDependencies": {

@@ -26,3 +26,9 @@ export const updateExpenseAPI = async (id, expenseData) => {
 export const deleteExpenseAPI = async (id) => {
   return await api.delete(`/expense/${id}`);
 };
+
+export const getExpenseSummaryAPI = async () => {
+  return await api.get(`/expense/summary`);
+};
+
+
