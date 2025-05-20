@@ -1,4 +1,6 @@
 const bcrypt = require('bcrypt');
+const jwt= require("jsonwebtoken");
+const crypto =require("crypto")
 
 class Helpers {
 
@@ -75,7 +77,21 @@ class Helpers {
   static generateOtp () {
    return Math.floor(100000 + Math.random() * 900000).toString();
  }
+static generateRefreshToken() {
+    return crypto.randomBytes(40).toString('hex');
+  }
 
+  static generateAccessToken(user) {
+    return jwt.sign(
+      { id: user.id },
+      process.env.JWT_SECRET,
+      { expiresIn: "10m"}
+    );
+  }
+
+  static hashToken(token) {
+    return crypto.createHash('sha256').update(token).digest('hex');
+  }
 
 }
 

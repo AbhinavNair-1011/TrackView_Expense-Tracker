@@ -86,6 +86,9 @@ const authSlice = createSlice({
     resetTwoFactor: (state) => {
       state.twoFactorRequired = false;
     },
+  changeIsAuthenticate: (state) => {
+  state.isAuthenticated = !state.isAuthenticated;
+}
   },
   extraReducers: (builder) => {
     builder
@@ -171,5 +174,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { resetError, resetTwoFactor } = authSlice.actions;
+export const { resetError, resetTwoFactor ,changeIsAuthenticate } = authSlice.actions;
 export default authSlice.reducer;

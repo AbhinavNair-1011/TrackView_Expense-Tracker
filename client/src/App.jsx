@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import RegisterPage from './features/auth/pages/RegisterPage';
 import LoginPage from './features/auth/pages/LoginPage';
 import DashboardLayout from './features/dashboard/DashboardLayout';
@@ -8,7 +8,7 @@ import AuthLayout from './features/auth/AuthLayout';
 import ProtectedRoute from './features/auth/ProtectetRoute';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { verifyUserCookie } from './features/auth/authSlice';
+import { logoutUser, verifyUserCookie } from './features/auth/authSlice';
 import { useState } from 'react';
 import ResetPasswordPage from './features/auth/pages/ResetPasswordPage';
 import ExpensePage from './features/expense/pages/ExpensePage';
@@ -18,13 +18,16 @@ import ExpensePage from './features/expense/pages/ExpensePage';
 function App() {
   const dispatch = useDispatch();
 
-
   const [verifying, setVerifying] = useState(true);
+
+  const handleVerificationFailed= ()=>{
+    dispatch(logoutUser())
+  }
 
   useEffect(() => {
     dispatch(verifyUserCookie()).finally(() => setVerifying(false));
-
-
+    window.addEventListener("logout",handleVerificationFailed)
+    return () => window.removeEventListener('logout', handleVerificationFailed);
   }, [dispatch]);
 
   if (verifying) return null;
@@ -45,7 +48,7 @@ function App() {
         <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
           <Route index element={<DashboardHome />} />
           <Route path="profile" element={<ProfilePage />} />
-          <Route path="expenses" element={<ExpensePage/>} />
+          <Route path="expenses" element={<ExpensePage />} />
         </Route>
 
       </Routes>

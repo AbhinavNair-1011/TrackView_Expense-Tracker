@@ -10,6 +10,7 @@ router.post('/auth/reset-password', authController.resetPassword);
 router.post('/auth/verify-login',authController.verify2FALogin);
 
 router.get("/auth/verify-cookie",authenticateToken,authController.verifyCookie)
+router.post('/auth/refresh-token',authController.refreshAccessToken);
 
 
 router.post('/a',authController.test)

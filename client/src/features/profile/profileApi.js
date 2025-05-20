@@ -1,12 +1,4 @@
-import axios from 'axios';
-
-// const API_URL = 'http://localhost:300/api/profile'; 
-
-const api = axios.create({
-  baseURL:  'http://localhost:3000/api',
-  withCredentials: true,
-});
-
+import api from "../../app/axiosConfig"
 
 export const fetchProfileAPI = async () => {
   return await api.get("/profile");

@@ -1,13 +1,17 @@
 const Helpers = require("../utils/helpers");
 const User = require("../models/userModel");
 const Otp = require("../models/otpModel")
-const jwt = require('jsonwebtoken');
 const { Op } = require("sequelize");
 const { sendEmail } = require("../services/emailService")
+const crypto = require('crypto');
+const Session = require("../models/sessionModel");
+const { createSession } = require("../controllers/sessionController")
+const { sequelize } = require('../database/dbConfig');
+
 
 
 const register = async (req, res) => {
-
+  const t = await sequelize.transaction();
   try {
     const {
       full_name,
@@ -16,72 +20,80 @@ const register = async (req, res) => {
       confirm_password,
       email,
       two_factor_enabled
-    } = req.body
+    } = req.body;
 
     if (!full_name.trim() || !phone.trim() || !password.trim() || !email.trim()) {
-      return Helpers.sendBadRequest(res, "all field values required")
-    }
-    if (confirm_password !== password) {
-      return Helpers.sendBadRequest(res, "password mismatch")
+      await t.rollback();
+      return Helpers.sendBadRequest(res, "All field values required");
     }
 
-    const user = await User.findOne({
+    if (confirm_password !== password) {
+      await t.rollback();
+      return Helpers.sendBadRequest(res, "Password mismatch");
+    }
+
+    const existingUser = await User.findOne({
       where: {
-        [Op.or]: [
-          { email },
-        ]
-      }
+        [Op.or]: [{ email }],
+      },
+      transaction: t
     });
 
-    if (user) {
+    if (existingUser) {
+      await t.rollback();
       return Helpers.sendConflict(res, "User already exists");
     }
 
-
     const hashedPassword = await Helpers.encrypt(password);
+
     const createdUser = await User.create({
       full_name,
       phone,
       password: hashedPassword,
       email,
       two_factor_enabled
-    })
+    }, { transaction: t });
 
-    const token = jwt.sign(
-      { id: createdUser.id, },
-      "process.env.JWT_SECRET",
-      { expiresIn: '1d' }
-    );
+    const sessionResult = await createSession(req, res, createdUser, false, t);
 
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-      maxAge: 24 * 60 * 60 * 1000,
-      path: "/"
-    });
+    if (!sessionResult.created) {
+      await t.rollback();
+      throw new Error(sessionResult.err);
+    }
 
-    return Helpers.sendCreated(res, { full_name, phone, email })
+    await t.commit();
+    return Helpers.sendCreated(res, { full_name, phone, email });
 
   } catch (err) {
+    await t.rollback();
     console.error(err);
-    return Helpers.sendInternalServerError(res, err.message || err)
+    return Helpers.sendInternalServerError(res, err.message || err);
   }
+};
 
-}
+
 const login = async (req, res) => {
+  const t = await sequelize.transaction();
+
   try {
-    const { email, password } = req.body;
+    const { email, password, rememberMe = false } = req.body;
 
     if (!email || !password) {
+      await t.rollback();
       return Helpers.sendBadRequest(res, 'Email and password are required.');
     }
 
     const user = await User.findOne({ where: { email } });
-    if (!user) return Helpers.sendNotFound(res, 'User not found.');
+    if (!user) {
+      await t.rollback();
+      return Helpers.sendNotFound(res, 'User not found.');
+    }
 
     const isMatch = await Helpers.compare(password, user.password);
-    if (!isMatch) return Helpers.sendUnauthorized(res, 'Invalid password.');
+    if (!isMatch) {
+      await t.rollback();
+      return Helpers.sendNotAcceptable(res, 'Invalid password.');
+    }
 
     if (user.two_factor_enabled) {
       const rawOtp = Helpers.generateOtp();
@@ -93,6 +105,7 @@ const login = async (req, res) => {
           userId: user.id,
           type: "2fa_login",
         },
+        transaction: t,
       });
 
       await Otp.create({
@@ -101,47 +114,54 @@ const login = async (req, res) => {
         type: '2fa_login',
         expiresAt,
         verified: false,
-      });
+      }, { transaction: t });
 
       await sendEmail(email, 'Your OTP Code', `<p>Your OTP is: <strong>${rawOtp}</strong></p>`);
+      await t.commit();
 
       return Helpers.sendOk(res, { twoFactor: true, message: 'OTP sent to your email.' });
     }
 
-    const token = jwt.sign({ id: user.id }, "process.env.JWT_SECRET", { expiresIn: '1d' });
-    res.cookie('token', token, {
-    // httpOnly: true,
-      // secure: true,
-      // sameSite: 'none',
-      maxAge: 24 * 60 * 60 * 1000,
-      path: '/',
-    });
+    const isSession = await createSession(req, res, user, rememberMe, t);
 
-    return Helpers.sendOk(res, {
-      user: {
-        email: user.email,
-        name: user.full_name,
-        phone: user.phone
-      },
-    });
+    if (isSession.created) {
+      await t.commit();
+      return Helpers.sendOk(res, {
+        user: {
+          email: user.email,
+          name: user.full_name,
+          phone: user.phone,
+        },
+      });
+    } else {
 
+      throw new Error(isSession.err);
+    }
   } catch (err) {
+    await t.rollback();
     console.error(err);
     return Helpers.sendInternalServerError(res);
   }
 };
 
 
+
+
 const verify2FALogin = async (req, res) => {
+  const t = await sequelize.transaction();
   try {
-    const { email, otp } = req.body;
+    const { email, otp, rememberMe } = req.body;
 
     if (!email || !otp) {
+      await t.rollback();
       return Helpers.sendBadRequest(res, 'Email and OTP are required.');
     }
 
-    const user = await User.findOne({ where: { email } });
-    if (!user) return Helpers.sendNotFound(res, 'User not found.');
+    const user = await User.findOne({ where: { email }, transaction: t });
+    if (!user) {
+      await t.rollback();
+      return Helpers.sendNotFound(res, 'User not found.');
+    }
 
     const otpEntry = await Otp.findOne({
       where: {
@@ -151,53 +171,69 @@ const verify2FALogin = async (req, res) => {
         expiresAt: { [Op.gt]: new Date() },
       },
       order: [['createdAt', 'DESC']],
+      transaction: t,
     });
 
     if (!otpEntry) {
+      await t.rollback();
       return Helpers.sendBadRequest(res, 'OTP expired or not found.');
     }
 
     const isMatch = await Helpers.compare(otp, otpEntry.otpCode);
-    if (!isMatch) return Helpers.sendBadRequest(res, 'Invalid OTP.');
+    if (!isMatch) {
+      await t.rollback();
+      return Helpers.sendBadRequest(res, 'Invalid OTP.');
+    }
 
     otpEntry.verified = true;
-    await otpEntry.save();
+    await otpEntry.save({ transaction: t });
+    await otpEntry.destroy({ transaction: t });
 
-    await otpEntry.destroy();
+    const isSession = await createSession(req, res, user, rememberMe, t);
+    if (!isSession.created) {
+      await t.rollback();
+      throw new Error(isSession.err);
+    }
 
-    const token = jwt.sign({ id: user.id }, "process.env.JWT_SECRET", { expiresIn: '1d' });
-    res.cookie('token', token, {
-      // httpOnly: true,
-      // secure: true,
-      // sameSite: 'none',
-      maxAge: 24 * 60 * 60 * 1000,
-      path: '/',
-    });
-
+    await t.commit();
     return Helpers.sendOk(res, {
       user: {
         email: user.email,
         name: user.full_name,
-        phone: user.phone
+        phone: user.phone,
       },
       message: '2FA login successful.',
     });
 
   } catch (err) {
     console.error(err);
+    await t.rollback();
     return Helpers.sendInternalServerError(res);
   }
 };
 
 
-
 const logout = async (req, res) => {
+  const hashedRefreshTokenFromCookie = req.cookies?.refreshToken;
   try {
-    res.clearCookie('token', {
-     // httpOnly: true,
-      // secure: true,
-      // sameSite: 'none',
+    res.clearCookie('accessToken', {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
       path: '/',
+    });
+
+    res.clearCookie('refreshToken', {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      path: '/',
+    });
+
+    await Session.destroy({
+      where: {
+        refreshToken: hashedRefreshTokenFromCookie,
+      },
     });
 
 
@@ -207,8 +243,8 @@ const logout = async (req, res) => {
   }
 };
 
-const verifyCookie = async (req, res) => {
 
+const verifyCookie = async (req, res) => {
   try {
     const userId = req.user.id;
     const user = await User.findByPk(userId, {
@@ -297,9 +333,54 @@ const resetPassword = async (req, res) => {
   }
 };
 
+const refreshAccessToken = async (req, res) => {
+  try {
+    const refreshToken = req.cookies?.refreshToken;
+    if (!refreshToken) {
+      return Helpers.sendUnauthorized(res, 'Unauthorized: No refresh token');
+    }
+
+    const hashedRefreshToken = crypto.createHash('sha256').update(refreshToken).digest('hex');
+
+    const session = await Session.findOne({ where: { refreshToken: hashedRefreshToken } });
+    if (!session) {
+      res.clearCookie('refreshToken', { path: '/' });
+      return Helpers.sendUnauthorized(res, 'Invalid or expired session');
+    }
+
+    if (session.expiresAt && new Date() > session.expiresAt) {
+      await session.destroy();
+      res.clearCookie('refreshToken', { path: '/' });
+      return Helpers.sendUnauthorized(res, 'Session expired');
+    }
+
+    const user = await User.findByPk(session.userId);
+    if (!user) {
+      res.clearCookie('refreshToken', { path: '/' });
+      return Helpers.sendUnauthorized(res, 'User not found');
+    }
+
+    const newAccessToken = Helpers.generateAccessToken(user);
+    const accessTokenMaxAge = session.rememberMe ? 10 * 60 * 1000 : undefined
+
+    res.cookie('accessToken', newAccessToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      maxAge: accessTokenMaxAge,
+      path: '/',
+    });
+
+    return Helpers.sendOk(res, { message: 'Access token refreshed' });
+
+  } catch (err) {
+    console.error(err);
+    return Helpers.sendInternalServerError(res);
+  }
+};
 
 const test = (req, res) => {
   console.log(req.cookies)
 }
 
-module.exports = { register, login, test, logout, verifyCookie, updatePassword, resetPassword, verify2FALogin }
+module.exports = { register, login, test, logout, verifyCookie, updatePassword, resetPassword, verify2FALogin, refreshAccessToken }

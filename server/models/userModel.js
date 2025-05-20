@@ -17,6 +17,11 @@ class User extends Model {
             as: 'expenses',
             onDelete: 'CASCADE',
         });
+        this.hasMany(models.Session, {
+            foreignKey: 'userId',
+            as: 'sessions',
+            onDelete: 'CASCADE',
+        });
 
     }
 }

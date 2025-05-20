@@ -40,7 +40,7 @@ const create = async (req, res) => {
 
 const getAll = async (req, res) => {
     try {
-        const { page = '1', limit = '10', category, fromDate, toDate , search, sort } = req.query;
+        const { page = '1', limit = '10', category, fromDate, toDate, search, sort } = req.query;
 
         const errors = [];
 
@@ -89,9 +89,9 @@ const getAll = async (req, res) => {
         }
 
         let order = [['date', 'DESC']];
-        
-        if(where.date){
-            order=[['date', 'ASC']];
+
+        if (where.date) {
+            order = [['date', 'ASC']];
         }
 
         if (sort === 'amount_asc') {
@@ -137,7 +137,6 @@ const getAll = async (req, res) => {
 const getOne = async (req, res) => {
     try {
 
-        console.log("one")
 
         const id = req.params.id;
 
@@ -210,14 +209,18 @@ const remove = async (req, res) => {
 
 const getSummary = async (req, res) => {
     try {
-        console.log("summary")
-        const userId = "488a5604-9667-488c-9d05-ee0c7a1b73f2"
+        const userId = req.user.id
 
-        const totalAmount = await Expense.sum('amount');
+        const totalAmount = await Expense.sum('amount', {where: { userId }, }    );
 
-        const totalCount = await Expense.count();
+        const totalCount = await Expense.count(
+            {where: { userId },}
+
+        );
 
         const mostRecent = await Expense.findOne({
+            where: { userId },
+
             order: [['date', 'DESC']],
             limit: 1,
         });
