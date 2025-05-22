@@ -105,9 +105,9 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
         state.isAuthenticated = false;
-      });
+      })
 
-    builder
+
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -128,9 +128,9 @@ const authSlice = createSlice({
         state.error = action.payload;
         state.isAuthenticated = false;
         state.twoFactorRequired = false;
-      });
+      })
 
-    builder
+ 
       .addCase(verifyLogin.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -144,9 +144,9 @@ const authSlice = createSlice({
       .addCase(verifyLogin.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });
+      })
 
-    builder
+
       .addCase(logoutUser.fulfilled, (state) => {
         state.user = null;
         state.isAuthenticated = false;
@@ -157,9 +157,9 @@ const authSlice = createSlice({
       .addCase(logoutUser.rejected, (state, action) => {
         state.error = action.payload;
         state.loading = false;
-      });
+      })
 
-    builder
+   
       .addCase(verifyUserCookie.pending, (state) => {
         state.error = null;
       })
@@ -170,7 +170,7 @@ const authSlice = createSlice({
       .addCase(verifyUserCookie.rejected, (state) => {
         state.user = null;
         state.isAuthenticated = false;
-      });
+      })
   },
 });
 

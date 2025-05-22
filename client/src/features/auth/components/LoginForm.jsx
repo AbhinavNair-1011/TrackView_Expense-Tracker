@@ -12,7 +12,6 @@ const LoginForm = ({ onLoginSubmit, onOtpSubmit, loading, error }) => {
   }, [error]);
 
   const handleChange = (e) => {
-
     const { name, value, type, checked } = e.target;
     setFormError('');
     setFormData((prev) => ({
@@ -52,7 +51,7 @@ const LoginForm = ({ onLoginSubmit, onOtpSubmit, loading, error }) => {
     }
 
     try {
-      const result = await onOtpSubmit({ email: formData.email, otp, type: '2fa_setup' });
+      const result = await onOtpSubmit({ email: formData.email, otp, type: '2fa_login' });
       if (!result?.success) {
         setFormError('Invalid OTP');
       }
@@ -70,7 +69,7 @@ const LoginForm = ({ onLoginSubmit, onOtpSubmit, loading, error }) => {
           </h2>
         </div>
 
-        {(formError || error) && (
+        {(formError) && (
           <div className="mb-0 md:mb-6 p-3 bg-red-100/80 border-l-4 border-red-500 rounded-lg flex items-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-red-600" viewBox="0 0 20 20" fill="currentColor">
               <path
@@ -79,11 +78,18 @@ const LoginForm = ({ onLoginSubmit, onOtpSubmit, loading, error }) => {
                 clipRule="evenodd"
               />
             </svg>
-            <span className="text-sm text-red-800">{formError || error}</span>
+            <span className="text-sm text-red-800">{formError}</span>
           </div>
         )}
 
-        <form onSubmit={twoFactorRequired ? handleOtpSubmit : handleLoginSubmit} className="space-y-5 p-2">
+        <form onSubmit={(e) => {  
+          e.preventDefault();
+          if (twoFactorRequired) {
+            handleOtpSubmit(e);
+          } else {
+            handleLoginSubmit(e);
+          }
+        }}>
           <div >
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
               Email address
@@ -141,7 +147,7 @@ const LoginForm = ({ onLoginSubmit, onOtpSubmit, loading, error }) => {
               />
             </div>
           )}
-          <div className="flex items-center space-x-2">
+                 <div className="flex items-center space-x-2">
             <input
               type="checkbox"
               id="rememberMe"
@@ -154,6 +160,7 @@ const LoginForm = ({ onLoginSubmit, onOtpSubmit, loading, error }) => {
               Remember me
             </label>
           </div>
+
 
           <button
             type="submit"
@@ -193,7 +200,6 @@ const LoginForm = ({ onLoginSubmit, onOtpSubmit, loading, error }) => {
               'Sign in'
             )}
           </button>
-
         </form>
       </div>
 

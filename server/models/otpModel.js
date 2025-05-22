@@ -18,7 +18,7 @@ const {sequelize}=require("../database/dbConfig")
       allowNull: false,
     },
     type: {
-      type: DataTypes.ENUM('forgot_password', 'verify_email','2fa_setup'),
+      type: DataTypes.ENUM('forgot_password', 'verify_email','2fa_login'),
       allowNull: false,
     },
     expiresAt: {

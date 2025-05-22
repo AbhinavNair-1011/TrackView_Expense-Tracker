@@ -40,7 +40,7 @@ const create = async (req, res) => {
 
 const getAll = async (req, res) => {
     try {
-        const { page = '1', limit = '10', category, fromDate, toDate, search, sort } = req.query;
+        const { page = '1', limit = '10', category, fromDate, toDate, search, sort} = req.query;
 
         const errors = [];
 
@@ -89,6 +89,7 @@ const getAll = async (req, res) => {
         }
 
         let order = [['date', 'DESC']];
+
 
         if (where.date) {
             order = [['date', 'ASC']];
@@ -211,22 +212,31 @@ const getSummary = async (req, res) => {
     try {
         const userId = req.user.id
 
-        const totalAmount = await Expense.sum('amount', {where: { userId }, }    );
+        const { fromDate, toDate } = req.query;
+
+        const where = { userId };
+        if (fromDate && toDate) {
+            where.date = {
+                [Op.between]: [new Date(fromDate), new Date(toDate)],
+            };
+        }
+
+        const totalAmount = await Expense.sum('amount', { where, });
 
         const totalCount = await Expense.count(
-            {where: { userId },}
+            { where, }
 
         );
 
         const mostRecent = await Expense.findOne({
-            where: { userId },
+            where,
 
             order: [['date', 'DESC']],
             limit: 1,
         });
 
         const category = await Expense.findAll({
-            where: { userId },
+            where,
             attributes: ['category', [fn('SUM', col('amount')), 'total']],
             group: ['category']
         });

@@ -20,8 +20,8 @@ export const deleteExpenseAPI = async (id) => {
   return await api.delete(`/expense/${id}`);
 };
 
-export const getExpenseSummaryAPI = async () => {
-  return await api.get(`/expense/summary`);
+export const getExpenseSummaryAPI = async (params = {}) => {
+  return await api.get(`/expense/summary`, { params });
 };
 
 

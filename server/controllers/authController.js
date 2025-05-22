@@ -116,7 +116,29 @@ const login = async (req, res) => {
         verified: false,
       }, { transaction: t });
 
-      await sendEmail(email, 'Your OTP Code', `<p>Your OTP is: <strong>${rawOtp}</strong></p>`);
+      const result = await sendEmail(
+        email,
+        'Your OTP Code',
+        `
+  <div style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px;">
+    <div style="max-width: 500px; margin: auto; background-color: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+      <h2 style="color: #333333; text-align: center;">Your One-Time Password (OTP)</h2>
+      <p style="font-size: 16px; color: #555555;">Hello,</p>
+      <p style="font-size: 16px; color: #555555;">
+        Use the following OTP to complete your action. This OTP is valid for a limited time:
+      </p>
+      <div style="text-align: center; margin: 30px 0;">
+        <span style="display: inline-block; background-color: #007bff; color: white; padding: 12px 24px; font-size: 24px; font-weight: bold; border-radius: 6px; letter-spacing: 3px;">
+          ${rawOtp}
+        </span>
+      </div>
+      <p style="font-size: 14px; color: #999999;">If you did not request this, you can ignore this email.</p>
+      <p style="font-size: 14px; color: #999999;">Thanks,<br/>Expense Tracker Team</p>
+    </div>
+  </div>
+  `
+      );
+
       await t.commit();
 
       return Helpers.sendOk(res, { twoFactor: true, message: 'OTP sent to your email.' });
@@ -214,7 +236,11 @@ const verify2FALogin = async (req, res) => {
 
 
 const logout = async (req, res) => {
-  const hashedRefreshTokenFromCookie = req.cookies?.refreshToken;
+  const refreshToken = req.cookies?.refreshToken;
+
+  
+  const hashedRefreshToken=Helpers.hashToken(refreshToken || "")
+
   try {
     res.clearCookie('accessToken', {
       httpOnly: true,
@@ -230,11 +256,14 @@ const logout = async (req, res) => {
       path: '/',
     });
 
-    await Session.destroy({
-      where: {
-        refreshToken: hashedRefreshTokenFromCookie,
-      },
-    });
+    if (hashedRefreshToken) {
+      await Session.destroy({
+        where: {
+          refreshToken: hashedRefreshToken,
+        },
+      });
+
+    }
 
 
     return Helpers.sendOk(res, [], 'Logged out successfully');
@@ -314,7 +343,6 @@ const resetPassword = async (req, res) => {
       },
       order: [['createdAt', 'DESC']],
     });
-
     if (!verifiedOtp) {
       return Helpers.sendUnauthorized(res, 'OTP verification required.');
     }

@@ -61,9 +61,9 @@ export const deleteExpense = createAsyncThunk(
 
 export const fetchExpenseSummary = createAsyncThunk(
   'expenses/fetchSummary',
-  async (_, { rejectWithValue }) => {
+  async (formData, { rejectWithValue }) => {
     try {
-      const response = await getExpenseSummaryAPI();
+      const response = await getExpenseSummaryAPI(formData);
       console.log(response)
       return response.data?.data;
     } catch (err) {
@@ -77,7 +77,7 @@ const initialState = {
   loading: false,
   error: null,
   currentExpense: null,
-  pagination: null,
+  pagination: {},
   summary: null,
   summaryLoading: false,
   summaryError: null,
@@ -93,6 +93,9 @@ export const expenseSlice = createSlice({
     clearCurrentExpense(state) {
       state.currentExpense = null;
     },
+    resetPagination(state){
+      state.pagination.page=1;
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -164,7 +167,7 @@ export const expenseSlice = createSlice({
   },
 });
 
-export const { setCurrentExpense, clearCurrentExpense } = expenseSlice.actions;
+export const { setCurrentExpense, clearCurrentExpense,resetPagination } = expenseSlice.actions;
 
 
 export default expenseSlice.reducer;

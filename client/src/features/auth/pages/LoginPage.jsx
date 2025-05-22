@@ -46,13 +46,13 @@ const LoginPage = () => {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-          <LoginForm
-            onLoginSubmit={handleLoginSubmit}
-            onOtpSubmit={handleOtpSubmit}
-            loading={loading}
-            error={error}
-          />
-    
+        <LoginForm
+          onLoginSubmit={handleLoginSubmit}
+          onOtpSubmit={handleOtpSubmit}
+          loading={loading}
+          error={error}
+        />
+
       </div>
     </div>
   );

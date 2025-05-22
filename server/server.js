@@ -26,23 +26,8 @@ const limiter = rateLimit({
 const corsOptions = {
   origin: process.env.FE_DOMAIN || 'http://localhost:5173',
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: [
-    'Content-Type',
-    'Authorization',
-    'X-Requested-With',
-    'Accept',
-    'X-CSRF-Token'
-  ],
-  exposedHeaders: [
-    'Content-Range',
-    'X-Content-Range',
-    'X-Total-Count',
-    'Set-Cookie'
-  ],
   credentials: true,
-  maxAge: 86400,
-  preflightContinue: false,
-  optionsSuccessStatus: 204
+
 };
 
 
@@ -53,21 +38,7 @@ app.use(cookieParser())
 app.use(sanitizeMiddleware);
 app.use(limiter);
 app.use(hpp());
-app.use(
-  helmet.contentSecurityPolicy({
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", process.env.FE_DOMAIN].filter(Boolean),
-      styleSrc: ["'self'", "https://fonts.googleapis.com"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      objectSrc: ["'none'"],
-      upgradeInsecureRequests: [],
-    },
-  })
-);
-
-
-
+app.use( helmet());
 
 app.use((req, res, next) => {
   res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');

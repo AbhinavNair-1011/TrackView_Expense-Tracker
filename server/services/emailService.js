@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
 
 const sendEmail = async (to, subject, html) => {
   const mailOptions = {
-    from: `"Expense Tracker" <${process.env.SMTP_FROM_EMAIL}>`,
+    from: process.env.SMTP_FROM_EMAIL,
     to,
     subject,
     html,
@@ -23,6 +23,7 @@ const sendEmail = async (to, subject, html) => {
     const info = await transporter.sendMail(mailOptions);
     return true;
   } catch (err) {
+    console.log(err)
     return false;
   }
 };

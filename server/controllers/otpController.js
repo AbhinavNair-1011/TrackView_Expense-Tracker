@@ -19,6 +19,7 @@ const sendOtp = async (req, res) => {
 
     const user = await User.findOne({ where: { email } });
     if (!user) return Helpers.sendNotFound(res, 'User not found.');
+
     await Otp.destroy({
       where: {
         userId: user.id,
@@ -33,7 +34,24 @@ const sendOtp = async (req, res) => {
     const result = await sendEmail(
       email,
       'Your OTP Code',
-      `<p>Your OTP is: <strong>${rawOtp}</strong></p>`
+      `
+  <div style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px;">
+    <div style="max-width: 500px; margin: auto; background-color: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+      <h2 style="color: #333333; text-align: center;">Your One-Time Password (OTP)</h2>
+      <p style="font-size: 16px; color: #555555;">Hello,</p>
+      <p style="font-size: 16px; color: #555555;">
+        Use the following OTP to complete your action. This OTP is valid for a limited time:
+      </p>
+      <div style="text-align: center; margin: 30px 0;">
+        <span style="display: inline-block; background-color: #007bff; color: white; padding: 12px 24px; font-size: 24px; font-weight: bold; border-radius: 6px; letter-spacing: 3px;">
+          ${rawOtp}
+        </span>
+      </div>
+      <p style="font-size: 14px; color: #999999;">If you did not request this, you can ignore this email.</p>
+      <p style="font-size: 14px; color: #999999;">Thanks,<br/>Expense Tracker Team</p>
+    </div>
+  </div>
+  `
     );
 
     if (result) {
@@ -86,10 +104,8 @@ const verifyOtp = async (req, res) => {
     otpEntry.verified = true;
     await otpEntry.save();
 
-    await otpEntry.destroy();
-    
     if (type === '2fa_login') {
-      user.two_factor_enabled = true; 
+      user.two_factor_enabled = true;
       await user.save();
     }
 

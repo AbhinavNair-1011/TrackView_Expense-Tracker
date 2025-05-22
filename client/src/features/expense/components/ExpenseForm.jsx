@@ -90,28 +90,31 @@ const ExpenseForm = ({ expenseId, onClose }) => {
 
 
   return (
-   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
-  <div className="w-full max-w-lg bg-zinc-200 rounded-3xl shadow-2xl overflow-hidden animate-fadeIn mx-auto my-8">
-    <div className="p-6 sm:p-8">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-semibold text-gray-800">
+<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 overflow-y-auto">
+  <div className="w-full max-w-md bg-zinc-50 rounded-xl shadow-xl overflow-hidden animate-fadeIn mx-auto my-8">
+    <div className="p-5 sm:p-6">
+      <div className="flex items-center justify-between mb-5">
+        <h2 className="text-xl font-bold text-gray-900">
           {expenseId ? 'Edit Expense' : 'Add New Expense'}
         </h2>
         <button
           onClick={onClose}
-          className="text-gray-400 hover:text-gray-600 transition-colors"
+          className="text-gray-500 hover:text-gray-700 transition-colors"
           aria-label="Close"
         >
-          <svg className="h-6 w-6" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+          <svg className="h-5 w-5" viewBox="0 0 24 24" stroke="currentColor" fill="none">
             <path d="M6 18L18 6M6 6l12 12" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
-            <DollarSign className="w-4 h-4 text-gray-500" /> Amount
+          <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-1">
+            <span className="flex items-center gap-1.5">
+              <DollarSign className="w-4 h-4 text-gray-500" />
+              Amount
+            </span>
           </label>
           <input
             id="amount"
@@ -121,24 +124,27 @@ const ExpenseForm = ({ expenseId, onClose }) => {
             value={formData.amount}
             onChange={handleChange}
             placeholder="e.g. 150.00"
-            className={`w-full shadow-inner bg-slate-100 px-4 py-2.5 rounded-2xl border transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.amount ? 'border-red-500' : 'border-gray-300'
+            className={`w-full px-3 py-2 rounded-lg border focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+              errors.amount ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white'
             }`}
           />
-          {errors.amount && <p className="mt-1 text-sm text-red-600">{errors.amount}</p>}
+          {errors.amount && <p className="mt-1 text-xs text-red-600">{errors.amount}</p>}
         </div>
 
         <div>
-          <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
-            <Folder className="w-4 h-4 text-gray-500" /> Category
+          <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
+            <span className="flex items-center gap-1.5">
+              <Folder className="w-4 h-4 text-gray-500" />
+              Category
+            </span>
           </label>
           <select
             id="category"
             name="category"
             value={formData.category}
             onChange={handleChange}
-            className={`w-full shadow-inner bg-slate-100 px-4 py-2.5 rounded-2xl border appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.category ? 'border-red-500' : 'border-gray-300'
+            className={`w-full px-3 py-2 rounded-lg border focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+              errors.category ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white'
             }`}
           >
             <option value="">Select category</option>
@@ -149,12 +155,15 @@ const ExpenseForm = ({ expenseId, onClose }) => {
             <option value="utilities">Utilities</option>
             <option value="other">Other</option>
           </select>
-          {errors.category && <p className="mt-1 text-sm text-red-600">{errors.category}</p>}
+          {errors.category && <p className="mt-1 text-xs text-red-600">{errors.category}</p>}
         </div>
 
         <div>
-          <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
-            <CalendarDays className="w-4 h-4 text-gray-500" /> Date
+          <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">
+            <span className="flex items-center gap-1.5">
+              <CalendarDays className="w-4 h-4 text-gray-500" />
+              Date
+            </span>
           </label>
           <input
             id="date"
@@ -162,16 +171,19 @@ const ExpenseForm = ({ expenseId, onClose }) => {
             type="date"
             value={formData.date}
             onChange={handleChange}
-            className={`w-full shadow-inner bg-slate-100 px-4 py-2.5 rounded-2xl border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.date ? 'border-red-500' : 'border-gray-300'
+            className={`w-full px-3 py-2 rounded-lg border focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+              errors.date ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white'
             }`}
           />
-          {errors.date && <p className="mt-1 text-sm text-red-600">{errors.date}</p>}
+          {errors.date && <p className="mt-1 text-xs text-red-600">{errors.date}</p>}
         </div>
 
         <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
-            <FileText className="w-4 h-4 text-gray-500" /> Description (optional)
+          <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+            <span className="flex items-center gap-1.5">
+              <FileText className="w-4 h-4 text-gray-500" />
+              Description (optional)
+            </span>
           </label>
           <textarea
             id="description"
@@ -180,32 +192,33 @@ const ExpenseForm = ({ expenseId, onClose }) => {
             value={formData.description}
             onChange={handleChange}
             placeholder="e.g. Uber ride to airport..."
-            className={`w-full px-4 py-2.5 rounded-2xl shadow-inner bg-slate-100 border resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.description ? 'border-red-500' : 'border-gray-300'
+            className={`w-full px-3 py-2 rounded-lg border resize-none focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+              errors.description ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white'
             }`}
           />
-          {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description}</p>}
+          {errors.description && <p className="mt-1 text-xs text-red-600">{errors.description}</p>}
         </div>
 
-        <div className="pt-4 flex justify-end gap-3">
+        <div className="pt-2 flex justify-end gap-3">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-xl border border-gray-300 text-sm text-gray-700 hover:bg-gray-100 transition"
+            className="px-4 py-2 rounded-lg border border-gray-300 text-sm text-gray-700 hover:bg-gray-50 transition"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="px-5 py-2 rounded-xl bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 transition"
+            className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transition"
           >
-            {expenseId ? 'Update Expense' : 'Add Expense'}
+            {expenseId ? 'Update' : 'Add Expense'}
           </button>
         </div>
       </form>
     </div>
   </div>
 </div>
+
   );
 };
 

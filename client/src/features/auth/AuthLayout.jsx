@@ -1,12 +1,24 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
-import { Outlet } from 'react-router-dom';
-import { Navigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { Navigate, Outlet } from 'react-router-dom';
+import { verifyUserCookie } from './authSlice';
 
 const AuthLayout = () => {
   const { isAuthenticated, loading } = useSelector((state) => state.auth);
+  const [verifiedOnce, setVerifiedOnce] = useState(false);
+  const dispatch = useDispatch();
+  useEffect(() => {
+  console.log('AuthLayout mounted');
+}, []);
 
-  if (loading) return null; 
+
+  useEffect(() => {
+    if (!isAuthenticated && !verifiedOnce) {
+      dispatch(verifyUserCookie()).finally(() => setVerifiedOnce(true));
+    }
+  }, [isAuthenticated, verifiedOnce, dispatch]);
+
+  if (loading || !verifiedOnce) return null;
 
   if (isAuthenticated) {
     return <Navigate to="/dashboard" replace />;
@@ -14,6 +26,5 @@ const AuthLayout = () => {
 
   return <Outlet />;
 };
-
 
 export default AuthLayout;

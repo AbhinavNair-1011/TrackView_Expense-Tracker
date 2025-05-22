@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
-import { sendOtp, verifyOtp, resetPassword, resetOtpState } from '../otpSlice';
+import { sendOtp, verifyOtp, resetPassword, resetOtpState, resendOtp } from '../otpSlice';
 import SendOtpForm from '../components/SendOtpForm';
 import VerifyOtpForm from '../components/VerifyOtpForm';
 import ResetPasswordForm from '../components/ResetPasswordForm';
@@ -11,7 +11,7 @@ const ResetPasswordPage = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate()
-  const { loading, error } = useSelector((state) => state.otp);
+  const { loading, error , resendLoading } = useSelector((state) => state.otp);
 
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
@@ -26,7 +26,13 @@ const ResetPasswordPage = () => {
       setMessage("OTP sent successfully")
     }
   };
-
+const handleReSendOtp = async () => {
+    const result = await dispatch(resendOtp({ email, type: 'forgot_password' }));
+    if (resendOtp.fulfilled.match(result)) {
+      setStep('verifyOtp');
+      setMessage("OTP resent successfully")
+    }
+  };
   const handleVerifyOtp = async () => {
     const result = await dispatch(verifyOtp({ email, type: 'forgot_password', otp }));
     if (verifyOtp.fulfilled.match(result)) {
@@ -47,6 +53,7 @@ const ResetPasswordPage = () => {
     }
   };
   const goBack = () => {
+    setOtp("")
     setMessage("");
     dispatch(resetOtpState())
     if (step === 'verifyOtp') {
@@ -91,11 +98,11 @@ const ResetPasswordPage = () => {
 
 
       {step === 'sendOtp' && (
-        <SendOtpForm email={email} setEmail={setEmail} onSubmit={handleSendOtp} loading={loading} />
+        <SendOtpForm email={email} setEmail={setEmail} onSubmit={handleSendOtp} loading={loading} onResendSubmit={handleReSendOtp} />
       )}
 
       {step === 'verifyOtp' && (
-        <VerifyOtpForm otp={otp} setOtp={setOtp} onSubmit={handleVerifyOtp} loading={loading} />
+        <VerifyOtpForm otp={otp} setOtp={setOtp} onSubmit={handleVerifyOtp} loading={loading} onResendSubmit={handleReSendOtp} resendLoading={resendLoading} />
       )}
 
       {step === 'resetPassword' && (

@@ -4,7 +4,7 @@ const authenticateToken= require("../middlewares/jwt");
 
 router.post("/auth/register",authController.register)
 router.post('/auth/login', authController.login);
-router.post('/auth/logout', authenticateToken,authController.logout);
+router.post('/auth/logout',authController.logout);
 router.put('/auth/update-password', authenticateToken,authController.updatePassword);
 router.post('/auth/reset-password', authController.resetPassword);
 router.post('/auth/verify-login',authController.verify2FALogin);

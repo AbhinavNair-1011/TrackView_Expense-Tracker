@@ -16,23 +16,8 @@ import ExpensePage from './features/expense/pages/ExpensePage';
 
 
 function App() {
-  const dispatch = useDispatch();
 
-  const [verifying, setVerifying] = useState(true);
-
-  const handleVerificationFailed= ()=>{
-    dispatch(logoutUser())
-  }
-
-  useEffect(() => {
-    dispatch(verifyUserCookie()).finally(() => setVerifying(false));
-    window.addEventListener("logout",handleVerificationFailed)
-    return () => window.removeEventListener('logout', handleVerificationFailed);
-  }, [dispatch]);
-
-  if (verifying) return null;
-
-
+  
 
   return (
     <Router>

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 
-const API_BASE_URL = import.meta.env.VITE_API_URL
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
 const api = axios.create({
     baseURL: API_BASE_URL,
@@ -17,16 +17,15 @@ api.interceptors.response.use(
         if (
             error.response?.status === 401 &&
             !originalRequest._retry &&
-            !isRefreshRoute         
+            !isRefreshRoute
         ) {
-            originalRequest._retry = true;
-
+              originalRequest._retry = true;
+           
             try {
                 await api.post('/auth/refresh-token');
                 return api(originalRequest);
             } catch (refreshError) {
-                console.log(refreshError);
-                window.dispatchEvent("logout");
+                window.dispatchEvent(new Event("logout"));
                 return Promise.reject(refreshError);
             }
         }

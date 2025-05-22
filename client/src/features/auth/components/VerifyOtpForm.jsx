@@ -1,9 +1,9 @@
 import React from 'react';
 
-const VerifyOtpForm = ({ otp, setOtp, onSubmit, loading }) => (
+const VerifyOtpForm = ({ otp, setOtp, onSubmit, loading, onResendSubmit, resendLoading }) => (
   <div className="max-w-md mx-auto bg-slate-100 p-8 rounded-xl shadow-lg">
     <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Verify OTP</h2>
-    
+
     <div className="mb-6">
       <label htmlFor="otp" className="block text-sm font-medium text-gray-700 mb-1">
         6-Digit Verification Code
@@ -32,12 +32,17 @@ const VerifyOtpForm = ({ otp, setOtp, onSubmit, loading }) => (
       </div>
     </div>
 
+
+    <span className="text-sm cursor-pointer" onClick={onResendSubmit}>
+      {resendLoading ? "Sendin Otp..." : "Resend Otp"}
+    </span>
+
+
     <button
       onClick={onSubmit}
       disabled={loading || otp.length !== 6}
-      className={`w-full py-3 px-4 rounded-lg font-medium text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 shadow-md ${
-        loading || otp.length !== 6 ? 'opacity-70 cursor-not-allowed' : 'hover:shadow-lg'
-      }`}
+      className={`w-full py-3 px-4 rounded-lg font-medium text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 shadow-md ${loading || otp.length !== 6 ? 'opacity-70 cursor-not-allowed' : 'hover:shadow-lg'
+        }`}
     >
       {loading ? (
         <span className="flex items-center justify-center">
