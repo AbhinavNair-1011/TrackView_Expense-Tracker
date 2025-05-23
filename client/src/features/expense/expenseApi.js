@@ -25,3 +25,18 @@ export const getExpenseSummaryAPI = async (params = {}) => {
 };
 
 
+export const getDuesAPI = async (params = {}) => {
+  return await api.get('/expense-dues', { params }); 
+};
+
+export const createDueAPI = async (dueData) => {
+  return await api.post('/expense-dues', dueData);
+};
+
+export const markPaidDueAPI = async (ids) => {
+  return await api.put(`/expense-dues/paid`, ids);
+};
+
+export const deleteDueAPI = async (id) => {
+  return await api.delete(`/expense-dues/${id}`);
+};

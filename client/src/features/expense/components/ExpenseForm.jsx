@@ -91,10 +91,10 @@ const ExpenseForm = ({ expenseId, onClose }) => {
 
   return (
 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 overflow-y-auto">
-  <div className="w-full max-w-md bg-zinc-50 rounded-xl shadow-xl overflow-hidden animate-fadeIn mx-auto my-8">
+  <div className="w-full max-w-md bg-blue-600 rounded-xl shadow-xl overflow-hidden animate-fadeIn   mx-auto my-8">
     <div className="p-5 sm:p-6">
       <div className="flex items-center justify-between mb-5">
-        <h2 className="text-xl font-bold text-gray-900">
+        <h2 className="text-xl font-bold text-white">
           {expenseId ? 'Edit Expense' : 'Add New Expense'}
         </h2>
         <button
@@ -102,7 +102,7 @@ const ExpenseForm = ({ expenseId, onClose }) => {
           className="text-gray-500 hover:text-gray-700 transition-colors"
           aria-label="Close"
         >
-          <svg className="h-5 w-5" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+          <svg className="h-5 w-5 text-white" viewBox="0 0 24 24" stroke="currentColor" fill="none">
             <path d="M6 18L18 6M6 6l12 12" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
@@ -110,9 +110,9 @@ const ExpenseForm = ({ expenseId, onClose }) => {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="amount" className=" text-white block text-sm font-medium  mb-1">
             <span className="flex items-center gap-1.5">
-              <DollarSign className="w-4 h-4 text-gray-500" />
+              <DollarSign className="w-4 h-4 text-white" />
               Amount
             </span>
           </label>
@@ -128,13 +128,13 @@ const ExpenseForm = ({ expenseId, onClose }) => {
               errors.amount ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white'
             }`}
           />
-          {errors.amount && <p className="mt-1 text-xs text-red-600">{errors.amount}</p>}
+          {errors.amount && <p className="mt-1 text-xs text-white">*{errors.amount}</p>}
         </div>
 
         <div>
-          <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="category" className="block text-sm font-medium text-white mb-1">
             <span className="flex items-center gap-1.5">
-              <Folder className="w-4 h-4 text-gray-500" />
+              <Folder className="w-4 h-4 text-white" />
               Category
             </span>
           </label>
@@ -155,13 +155,13 @@ const ExpenseForm = ({ expenseId, onClose }) => {
             <option value="utilities">Utilities</option>
             <option value="other">Other</option>
           </select>
-          {errors.category && <p className="mt-1 text-xs text-red-600">{errors.category}</p>}
+          {errors.category && <p className="mt-1 text-xs text-white">*{errors.category}</p>}
         </div>
 
         <div>
-          <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="date" className="block text-sm font-medium text-white mb-1">
             <span className="flex items-center gap-1.5">
-              <CalendarDays className="w-4 h-4 text-gray-500" />
+              <CalendarDays className="w-4 h-4 text-white" />
               Date
             </span>
           </label>
@@ -175,13 +175,13 @@ const ExpenseForm = ({ expenseId, onClose }) => {
               errors.date ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white'
             }`}
           />
-          {errors.date && <p className="mt-1 text-xs text-red-600">{errors.date}</p>}
+          {errors.date && <p className="mt-1 text-xs text-white">*{errors.date}</p>}
         </div>
 
         <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="description" className="block text-sm font-medium text-white mb-1">
             <span className="flex items-center gap-1.5">
-              <FileText className="w-4 h-4 text-gray-500" />
+              <FileText className="w-4 h-4 text-white" />
               Description (optional)
             </span>
           </label>
@@ -196,20 +196,20 @@ const ExpenseForm = ({ expenseId, onClose }) => {
               errors.description ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white'
             }`}
           />
-          {errors.description && <p className="mt-1 text-xs text-red-600">{errors.description}</p>}
+          {errors.description && <p className="mt-1 text-xs text-white">*{errors.description}</p>}
         </div>
 
         <div className="pt-2 flex justify-end gap-3">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-lg border border-gray-300 text-sm text-gray-700 hover:bg-gray-50 transition"
+            className="px-4 py-2 rounded-lg border text-white border-gray-300 text-sm hover:bg-blue-700 transition"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transition"
+            className="px-4 py-2 rounded-lg border border-gray-300 text-white text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transition"
           >
             {expenseId ? 'Update' : 'Add Expense'}
           </button>

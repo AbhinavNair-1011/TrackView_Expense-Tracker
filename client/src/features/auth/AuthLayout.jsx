@@ -18,7 +18,7 @@ const AuthLayout = () => {
     }
   }, [isAuthenticated, verifiedOnce, dispatch]);
 
-  if (loading || !verifiedOnce) return null;
+  if (!verifiedOnce) return null;
 
   if (isAuthenticated) {
     return <Navigate to="/dashboard" replace />;

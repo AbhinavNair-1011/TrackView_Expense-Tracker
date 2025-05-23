@@ -17,7 +17,7 @@ const sanitizeMiddleware = require("./middlewares/sanitizeInput");
 
 const limiter = rateLimit({
   windowMs: 5 * 60 * 1000, 
-  max: 100, 
+  max: 500, 
   standardHeaders: true,
   legacyHeaders: false,
 });
@@ -51,13 +51,14 @@ const authRoute=require("./routes/authRoute");
 const profileRoute=require("./routes/profileRoute");
 const otpRoute=require("./routes/otpRoute");
 const expenseRoute= require("./routes/expenseRoute");
+const expenseDueRoute= require("./routes/expenseDueRoute")
 
 
 app.use("/api",authRoute)
 app.use("/api",profileRoute);
 app.use("/api",otpRoute)
 app.use("/api",expenseRoute)
-
+app.use("/api",expenseDueRoute)
 
 
 const port = process.env.SERVER_PORT || 3000

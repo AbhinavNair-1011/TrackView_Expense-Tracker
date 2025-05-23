@@ -20,7 +20,7 @@ const ExpenseSummary = ({ summary }) => {
   return (
     <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
 
-      <div className="bg-white p-4 rounded-lg shadow-md border border-gray-100">
+      <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-500">Total Expenses</p>
@@ -36,7 +36,7 @@ const ExpenseSummary = ({ summary }) => {
         </div>
       </div>
 
-      <div className="bg-white p-4 rounded-lg shadow-md border border-gray-100">
+      <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-500">Number of Expenses</p>
@@ -50,7 +50,7 @@ const ExpenseSummary = ({ summary }) => {
         </div>
       </div>
 
-      <div className="bg-white p-4 rounded-lg shadow-md border border-gray-100">
+      <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-500">Top Category</p>
@@ -69,7 +69,7 @@ const ExpenseSummary = ({ summary }) => {
         </div>
       </div>
 
-      <div className="bg-white p-4 rounded-lg shadow-md border border-gray-100">
+      <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-500">Last Expense</p>
@@ -91,4 +91,4 @@ const ExpenseSummary = ({ summary }) => {
   );
 };
 
-export default ExpenseSummary;
+export default React.memo(ExpenseSummary);

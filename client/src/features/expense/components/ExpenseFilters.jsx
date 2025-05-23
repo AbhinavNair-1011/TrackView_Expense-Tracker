@@ -24,11 +24,8 @@ const ExpenseFilters = ({
     }, [search]);
 
     useEffect(() => {
-        const handler = setTimeout(() => {
             onSearchChange(localSearch);
-        }, 1000);
 
-        return () => clearTimeout(handler);
     }, [localSearch, onSearchChange]);
 
     const [expandedSection, setExpandedSection] = useState("initial");
@@ -98,7 +95,7 @@ const ExpenseFilters = ({
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
-                >f
+                >
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
 
@@ -319,4 +316,4 @@ const ExpenseFilters = ({
     );
 };
 
-export default ExpenseFilters;
+export default React.memo(ExpenseFilters);

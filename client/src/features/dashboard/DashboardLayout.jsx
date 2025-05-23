@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
-import Navbar from './components/Navbar';
+import Navbar from './components/NavBar';
 import Sidebar from './components/Sidebar';
 
 const DashboardLayout = () => {
@@ -32,7 +32,7 @@ const DashboardLayout = () => {
           setIsCollapsed={setIsCollapsed}
         />
 
-        <main className={`flex-1 bg-gray-50 p-3  md:p-6 pt-6 overflow-y-auto  transition-all duration-200 ease-in-out
+        <main className={`flex-1 bg-gray-50 p-3  md:p-6 pt-6 overflow-y-auto  transition-all duration-200 ease-in-out min-h-screen
            ${isCollapsed ? ' mt-16 sm:mt-0 sm:ml-16' : '  mt-16 sm:mt-0 sm:ml-52'}`}
         >
           <Outlet />

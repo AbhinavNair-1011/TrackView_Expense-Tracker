@@ -34,9 +34,9 @@ const handleNextPageChange=()=>{
         <div className="col-span-2 text-right">Amount</div>
       </div>
 
-      <div className="space-y-2 "   >
+      <div className="space-y-1 "   >
         {expenses.map(({ id, date, category, description, amount }) => (
-          <div key={id}  className="group bg-white border border-gray-200 rounded-lg hover:shadow-sm transition-shadow p-4">
+          <div key={id}  className="group shadow-inner border-none bg-white border border-gray-200 rounded-lg  transition-shadow p-4">
             <div className="sm:hidden grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
               <div className="flex flex-col space-y-1">
                 <span className="text-xs text-gray-500">Date</span>

@@ -92,7 +92,7 @@ const getAll = async (req, res) => {
 
 
         if (where.date) {
-            order = [['date', 'ASC']];
+            order = [['date', 'DESC']];
         }
 
         if (sort === 'amount_asc') {
