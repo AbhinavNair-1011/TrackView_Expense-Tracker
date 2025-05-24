@@ -30,8 +30,7 @@ const Sidebar = ({ setIsCollapsed, isCollapsed,isMobile }) => {
   {[
     { name: 'Dashboard', icon: '🏠', path: '/dashboard' },
     { name: 'Expenses', icon: '💰', path: '/dashboard/expenses' },
-    { name: 'Reports', icon: '📊', path: '/reports' },
-    { name: 'Settings', icon: '⚙️', path: '/settings' },
+    { name: 'Settings', icon: '⚙️', path: '/dashboard/profile' },
   ].map((item) => (
     <li key={item.name} 
     onClick={()=>{

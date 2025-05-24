@@ -8,6 +8,9 @@ import ExpenseInfoCard from '../components/ExpenseInfoCard';
 import ExpenseFilters from '../components/ExpenseFilters';
 import ExpenseDueList from '../components/ExpenseDueList'
 import ExpenseDueForm from '../components/ExpenseDueForm'
+import ExpenseDueNotifications from '../components/ExpenseDueNotification';
+import ExpenseLimit from '../components/ExpenseLimit';
+import { useRef } from 'react';
 
 
 
@@ -15,6 +18,7 @@ const ExpensePage = () => {
   const dispatch = useDispatch();
   const { pagination, expenses, error, summary, summaryLoading, summaryError } = useSelector((state) => state.expense);
   const { dues } = useSelector((state) => state.expense);
+  const ref=useRef(null)
 
   const [showForm, setShowForm] = useState(false);
   const [editExpenseId, setEditExpenseId] = useState(null);
@@ -127,6 +131,7 @@ const ExpensePage = () => {
     }
   };
 
+  
   // if (summaryLoading) return <p>Loading summary...</p>;
   // if (summaryError) return <p>Error loading summary: {summaryError}</p>;
 
@@ -181,13 +186,13 @@ const ExpensePage = () => {
       <ExpenseSummary summary={summary} />
 
 
-      {error && (
+      {/* {error && (
         <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded">
           <p>{error}</p>
         </div>
-      )}
+      )} */}
 
-      <div className="sm:mt-20 flex flex-col text-center sm:flex-row flex-wrap justify-between items-stretch gap-6 mb-20">
+      <div className="sm:mt-20 flex flex-col text-center sm:flex-row flex-wrap justify-between items-stretch gap-6 mb-14">
 
         <div className="flex-1 min-w-[260px] bg-[rgb(249,250,255)] p-6 rounded-xl border border-gray-100 shadow-sm">
           <p className="text-gray-800 text-sm sm:text-base font-semibold">Manage your expenses efficiently</p>
@@ -217,13 +222,19 @@ const ExpensePage = () => {
         </div>
 
       </div>
+        
+      <ExpenseDueNotifications/>
 
 
-      <div className="mb-6 border-b border-gray-200">
 
-        <nav className="-mb-px flex space-x-8">
+      <div  className="mb-6 border-b border-gray-200 ">
+
+        <nav className="-mb-px flex space-x-8" ref={ref} >
           <button
-            onClick={() => setActiveTab('list')}
+            onClick={() =>{ setActiveTab('list') ;
+                 ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+
+            }}
             className={`${activeTab === 'list' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
           >
             <div className="flex items-center gap-2">
@@ -235,7 +246,10 @@ const ExpensePage = () => {
           </button>
 
           <button
-            onClick={() => setActiveTab('dues')}
+            onClick={() => { setActiveTab('dues') ;
+               ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+
+            }}
             className={`${activeTab === 'dues' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
           >
             <div className="flex items-center gap-2">
@@ -252,7 +266,6 @@ const ExpensePage = () => {
 
       </div>
       <div>
-
         {activeTab === 'list' &&
           <> <ExpenseFilters
             search={search}
@@ -283,17 +296,20 @@ const ExpensePage = () => {
               expenses={expenses}
               onEdit={handleEditClick}
               onDelete={handleDeleteClick}
+              setPage={setPage}
+              scrollRef={ref}
             />
           </>
         }
+        </div>
 
         {activeTab === 'dues' &&
 
           <ExpenseDueList
             dues={dues}
+            scrollRef={ref}
            />
         }
-      </div>
 
       {showForm && (
         <ExpenseForm

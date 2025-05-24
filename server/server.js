@@ -16,10 +16,10 @@ const sanitizeMiddleware = require("./middlewares/sanitizeInput");
 
 
 const limiter = rateLimit({
-  windowMs: 5 * 60 * 1000, 
-  max: 500, 
-  standardHeaders: true,
-  legacyHeaders: false,
+  // windowMs: 5 * 60 * 1000, 
+  // max: 500, 
+  // standardHeaders: true,
+  // legacyHeaders: false,
 });
 
 
@@ -36,7 +36,7 @@ app.use(compression());
 app.use(express.json())
 app.use(cookieParser())
 app.use(sanitizeMiddleware);
-app.use(limiter);
+// app.use(limiter);
 app.use(hpp());
 app.use( helmet());
 

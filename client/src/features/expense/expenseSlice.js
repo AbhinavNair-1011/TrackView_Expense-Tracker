@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
   createExpenseAPI,
   getExpensesAPI,
@@ -10,16 +10,14 @@ import {
   createDueAPI,
   markPaidDueAPI,
   deleteDueAPI,
-} from './expenseApi';
-
-
+  getDueNotificationAPI,
+} from "./expenseApi";
 
 export const fetchExpenses = createAsyncThunk(
-  'expenses/fetchAll',
+  "expenses/fetchAll",
   async (params, { rejectWithValue }) => {
     try {
       const response = await getExpensesAPI(params);
-      console.log(response)
       return response.data?.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
@@ -28,7 +26,7 @@ export const fetchExpenses = createAsyncThunk(
 );
 
 export const createExpense = createAsyncThunk(
-  'expenses/create',
+  "expenses/create",
   async (expenseData, { rejectWithValue }) => {
     try {
       const response = await createExpenseAPI(expenseData);
@@ -40,7 +38,7 @@ export const createExpense = createAsyncThunk(
 );
 
 export const updateExpense = createAsyncThunk(
-  'expenses/update',
+  "expenses/update",
   async ({ id, ...expenseData }, { rejectWithValue }) => {
     try {
       const response = await updateExpenseAPI(id, expenseData);
@@ -52,7 +50,7 @@ export const updateExpense = createAsyncThunk(
 );
 
 export const deleteExpense = createAsyncThunk(
-  'expenses/deleteExpense',
+  "expenses/deleteExpense",
   async (id, { rejectWithValue }) => {
     try {
       const response = await deleteExpenseAPI(id);
@@ -64,11 +62,10 @@ export const deleteExpense = createAsyncThunk(
 );
 
 export const fetchExpenseSummary = createAsyncThunk(
-  'expenses/fetchSummary',
+  "expenses/fetchSummary",
   async (formData, { rejectWithValue }) => {
     try {
       const response = await getExpenseSummaryAPI(formData);
-      console.log(response)
       return response.data?.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
@@ -77,22 +74,19 @@ export const fetchExpenseSummary = createAsyncThunk(
 );
 
 export const fetchDues = createAsyncThunk(
-  'expenses/fetchDues',
-  async (params, { rejectWithValue }) => {
+  "expenses/fetchDues",
+  async (params = {}, { rejectWithValue }) => {
     try {
       const response = await getDuesAPI(params);
-            console.log(response)
-
       return response.data.data;
     } catch (err) {
-      console.log(err)
       return rejectWithValue(err.response?.data?.message || err.message);
     }
   }
 );
 
 export const createDue = createAsyncThunk(
-  'expenses/createDue',
+  "expenses/createDue",
   async (dueData, { rejectWithValue }) => {
     try {
       const response = await createDueAPI(dueData);
@@ -104,7 +98,7 @@ export const createDue = createAsyncThunk(
 );
 
 export const markDuePaid = createAsyncThunk(
-  'expenses/markDuePaid',
+  "expenses/markDuePaid",
   async (id, { rejectWithValue }) => {
     try {
       const response = await markPaidDueAPI(id);
@@ -116,7 +110,7 @@ export const markDuePaid = createAsyncThunk(
 );
 
 export const deleteDue = createAsyncThunk(
-  'expenses/deleteDue',
+  "expenses/deleteDue",
   async (id, { rejectWithValue }) => {
     try {
       await deleteDueAPI(id);
@@ -127,8 +121,8 @@ export const deleteDue = createAsyncThunk(
   }
 );
 
-export const  updateDue = createAsyncThunk(
-  'expenses/deleteDue',
+export const updateDue = createAsyncThunk(
+  "expenses/deleteDue",
   async (id, { rejectWithValue }) => {
     try {
       await deleteDueAPI(id);
@@ -139,22 +133,34 @@ export const  updateDue = createAsyncThunk(
   }
 );
 
+export const getDueNotification = createAsyncThunk(
+  "expenses/duenotification",
+  async (_,{ rejectWithValue }) => {
+    try {
+      const response = await getDueNotificationAPI();
+      return response.data.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || err.message);
+    }
+  }
+);
 
 const initialState = {
   expenses: [],
   dues: [],
   loading: false,
   error: null,
-  currentExpense: null,
+  currentExpense:[],
   currentDue: null,
+  urgentDues:[],
   pagination: {},
-  summary: null,
+  summary: [],
   summaryLoading: false,
   summaryError: null,
 };
 
 export const expenseSlice = createSlice({
-  name: 'expenses',
+  name: "expenses",
   initialState,
   reducers: {
     setCurrentExpense(state, action) {
@@ -183,7 +189,6 @@ export const expenseSlice = createSlice({
         state.loading = false;
         state.expenses = action.payload.expenses;
         state.pagination = action.payload.pagination;
-
       })
       .addCase(fetchExpenses.rejected, (state, action) => {
         state.loading = false;
@@ -207,7 +212,9 @@ export const expenseSlice = createSlice({
       })
       .addCase(updateExpense.fulfilled, (state, action) => {
         state.loading = false;
-        const index = state.expenses.findIndex(e => e.id === action.payload.id);
+        const index = state.expenses.findIndex(
+          (e) => e.id === action.payload.id
+        );
         if (index !== -1) state.expenses[index] = action.payload;
       })
       .addCase(updateExpense.rejected, (state, action) => {
@@ -233,7 +240,7 @@ export const expenseSlice = createSlice({
       .addCase(deleteExpense.fulfilled, (state, action) => {
         state.loading = false;
         const id = action.payload;
-        state.expenses = state.expenses.filter(expense => expense.id !== id);
+        state.expenses = state.expenses.filter((expense) => expense.id !== id);
       })
       .addCase(deleteExpense.rejected, (state, action) => {
         state.loading = false;
@@ -246,7 +253,7 @@ export const expenseSlice = createSlice({
       })
       .addCase(fetchDues.fulfilled, (state, action) => {
         state.loading = false;
-        state.dues = action.payload;
+        state.dues = action.payload.dues;
       })
       .addCase(fetchDues.rejected, (state, action) => {
         state.loading = false;
@@ -272,7 +279,9 @@ export const expenseSlice = createSlice({
       })
       .addCase(markDuePaid.fulfilled, (state, action) => {
         state.loading = false;
-        const index = state.dues.findIndex(due => due.id === action.payload.id);
+        const index = state.dues.findIndex(
+          (due) => due.id === action.payload.id
+        );
         if (index !== -1) state.dues[index] = action.payload;
       })
       .addCase(markDuePaid.rejected, (state, action) => {
@@ -286,18 +295,30 @@ export const expenseSlice = createSlice({
       })
       .addCase(deleteDue.fulfilled, (state, action) => {
         state.loading = false;
-        state.dues = state.dues.filter(due => due.id !== action.payload);
+        state.dues = state.dues.filter((due) => due.id !== action.payload);
       })
       .addCase(deleteDue.rejected, (state, action) => {
-        state.loading = false;
         state.error = action.payload;
       })
-    
-
+      .addCase(getDueNotification.pending, (state) => {
+        state.error = null;
+      })
+      .addCase(getDueNotification.fulfilled, (state, action) => {
+      
+        state.urgentDues = action.payload;
+      })
+      .addCase(getDueNotification.rejected, (state, action) => {
+        state.error = action.payload;
+      });
   },
 });
 
-export const { setCurrentExpense, clearCurrentExpense, resetPagination , setCurrentDue ,clearCurrentDue} = expenseSlice.actions;
-
+export const {
+  setCurrentExpense,
+  clearCurrentExpense,
+  resetPagination,
+  setCurrentDue,
+  clearCurrentDue,
+} = expenseSlice.actions;
 
 export default expenseSlice.reducer;

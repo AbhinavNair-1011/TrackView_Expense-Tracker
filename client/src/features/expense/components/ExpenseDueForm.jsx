@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 const ExpenseDueForm = ({ onClose, onSubmit }) => {
-
+  const [error, setError] = useState("")
   const [formData, setFormData] = useState({
     title: "",
     amount: "",
@@ -17,6 +17,7 @@ const ExpenseDueForm = ({ onClose, onSubmit }) => {
   };
 
   const handleChange = (e) => {
+    setError("")
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -24,11 +25,17 @@ const ExpenseDueForm = ({ onClose, onSubmit }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit(formData);
-    onClose();
-  };
+const handleSubmit = (e) => {
+  e.preventDefault();
+if (!isNaN(formData.title.trim()) ) {
+  setError("Title should not be a number");
+} else {
+  onSubmit(formData);
+  onClose();
+}
+
+};
+
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 overflow-y-auto">
@@ -40,7 +47,8 @@ const ExpenseDueForm = ({ onClose, onSubmit }) => {
 
         <div className="mb-4">
           <label htmlFor="title" className="block text-sm font-medium text-white mb-1 ">Title</label>
-          <input placeholder="e.g. due name" type="text" id="title" name="title" value={formData.title} onChange={handleChange} className="w-full px-3 py-2 rounded-lg border focus:outline-none focus:ring-1 focus:ring-blue-500 " required maxLength={100} />
+          <input placeholder="e.g. due name" type="text" id="title" name="title" value={formData.title} onChange={handleChange} className={`w-full px-3 py-2 rounded-lg border focus:outline-none focus:ring-1 ${error ? " focus:ring-red-500 " : " focus:ring-blue-500 "}`} required maxLength={100} />
+            <p className={`text-white text-sm bg-red-600 transition-all ease-in-out delay-5000 rounded-md pl-1 ${error? "h-[20px]" : "h-0" }`}> {error}</p>
         </div>
         <div className="mb-4">
           <label htmlFor="amount" className="block text-sm font-medium text-white mb-1">Amount (₹)</label>

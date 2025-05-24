@@ -40,3 +40,7 @@ export const markPaidDueAPI = async (ids) => {
 export const deleteDueAPI = async (id) => {
   return await api.delete(`/expense-dues/${id}`);
 };
+
+export const getDueNotificationAPI = async (id) => {
+return await api.get("http://localhost:3000/api/expense-dues/notifications");
+}
