@@ -42,5 +42,5 @@ export const deleteDueAPI = async (id) => {
 };
 
 export const getDueNotificationAPI = async (id) => {
-return await api.get("http://localhost:3000/api/expense-dues/notifications");
+return await api.get("/expense-dues/notifications");
 }

@@ -3,40 +3,30 @@ import { useDispatch, useSelector } from "react-redux";
 import { getDueNotification } from "../expenseSlice";
 import { AlertTriangle, ChevronUp, ChevronDown, Clock } from "lucide-react";
 
-const ExpenseDueNotifications = () => {
-  const [urgentDuesLocal, setUrgentDuesLocal] = useState([]);
-  const [upcomingDuesLocal, setUpcomingDuesLocal] = useState([]);
+const ExpenseDueNotifications = ({urgentDues}) => {
   const [showUrgent, setShowUrgent] = useState(true);
   const [showUpcoming, setShowUpcoming] = useState(false);
 
-  const dispatch = useDispatch();
-  const { urgentDues } = useSelector((state) => state.expense);
+  const [urgentDuesLocal, setUrgentDuesLocal] = useState([]);
+  const [upcomingDuesLocal, setUpcomingDuesLocal] = useState([]);
+
 
   useEffect(() => {
-    const fetchDues = async () => {
-      try {
-        await dispatch(getDueNotification()).unwrap();
-        const today = new Date();
+    const today = new Date();
 
-        const urgent = [];
-        const upcoming = [];
+    const urgent = [];
+    const upcoming = [];
 
-        urgentDues.forEach((due) => {
-          const dueDate = new Date(due.dueDate);
-          const daysLeft = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
-          if (daysLeft <= 3) urgent.push(due);
-          else upcoming.push(due);
-        });
+    urgentDues.forEach((due) => {
+      const dueDate = new Date(due.dueDate);
+      const daysLeft = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
+      if (daysLeft <= 3) urgent.push(due);
+      else upcoming.push(due);
+    });
 
-        setUrgentDuesLocal(urgent);
-        setUpcomingDuesLocal(upcoming);
-      } catch (err) {
-        console.error("Failed to fetch due notifications", err);
-      }
-    };
-
-    fetchDues();
-  }, [dispatch ]);
+    setUrgentDuesLocal(urgent);
+    setUpcomingDuesLocal(upcoming);
+  }, [urgentDues]);
 
   const formatDate = (dateStr) =>
     new Date(dateStr).toLocaleDateString(undefined, {
