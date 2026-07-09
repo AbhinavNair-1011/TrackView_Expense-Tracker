@@ -84,7 +84,7 @@ static generateRefreshToken() {
   static generateAccessToken(user) {
     return jwt.sign(
       { id: user.id },
-      process.env.JWT_SECRET,
+      process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: "10m"}
     );
   }

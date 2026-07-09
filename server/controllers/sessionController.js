@@ -24,7 +24,7 @@ const createSession = async (req, res, user,rememberMe, transaction) => {
     const accessTokenMaxAge = rememberMe ? 10 * 60 * 1000 : undefined;
 
       res.cookie('accessToken', accessToken, {
-      // httpOnly: true,
+      httpOnly: true,
       // secure: true,
       // sameSite:"none",
       maxAge: accessTokenMaxAge,
@@ -33,7 +33,7 @@ const createSession = async (req, res, user,rememberMe, transaction) => {
 
     res.cookie('refreshToken', refreshToken, {
       path: '/',
-      //  httpOnly: true,
+       httpOnly: true,
       // secure: true,
       // sameSite:"none",
       maxAge: refreshTokenMaxAge,

@@ -8,11 +8,9 @@ const app= express();
 const cors= require("cors");
 const cookieParser= require("cookie-parser")
 const helmet = require("helmet");
-const xss = require("xss-clean");
 const rateLimit = require("express-rate-limit");
 const hpp = require("hpp");
 const compression = require("compression");
-const sanitizeMiddleware = require("./middlewares/sanitizeInput");
 
 
 const limiter = rateLimit({
@@ -35,7 +33,6 @@ app.use(cors(corsOptions));
 app.use(compression());
 app.use(express.json())
 app.use(cookieParser())
-app.use(sanitizeMiddleware);
 // app.use(limiter);
 app.use(hpp());
 app.use( helmet());
@@ -61,7 +58,7 @@ app.use("/api",expenseRoute)
 app.use("/api",expenseDueRoute)
 
 
-const port = process.env.SERVER_PORT || 3000
+const port = process.env.SERVER_PORT 
 
 dbConnect(()=>{
      app.listen(port, (err) => {

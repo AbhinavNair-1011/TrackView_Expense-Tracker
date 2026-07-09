@@ -57,6 +57,7 @@ const register = async (req, res) => {
     const sessionResult = await createSession(req, res, createdUser, false, t);
 
     if (!sessionResult.created) {
+      console.log(sessionResult)
       await t.rollback();
       throw new Error(sessionResult.err);
     }
