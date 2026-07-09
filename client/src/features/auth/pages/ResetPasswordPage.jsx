@@ -66,7 +66,7 @@ const handleReSendOtp = async () => {
   };
 
   return (
-    <div className=" min-h-screen p-6 border rounded shadow bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100">
+    <div className=" min-h-screen p-6 border rounded shadow bg-gradient-to-br from-slate-100 via-blue-100 to-cyan-100">
       <button
         onClick={goBack}
         className="flex items-center text-blue-600 hover:text-blue-800 mb-4"
