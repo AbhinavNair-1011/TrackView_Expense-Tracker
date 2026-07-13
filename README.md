@@ -1,8 +1,10 @@
-#  ViewTrack_ExpenseTracker
+#  ViewTrack_ExpenseTracker (  https://trackview.virtualdev.online  )
 
 A full-stack Expense Tracker application that helps users manage their income and expenses with secure authentication, real-time expense tracking, and insightful financial summaries.
 
 ---
+
+### Deployed - AWS EC2  PM2 - NGINX  SSL CERTBOT
 
 ##  Tech Stack
 
@@ -20,6 +22,8 @@ A full-stack Expense Tracker application that helps users manage their income an
 ### Database
 - MySQL
 - Sequelize ORM
+- AWS RDS
+
 
 ### Authentication & Authorization
 - JWT (JSON Web Token)
